@@ -18,6 +18,7 @@ import uuid
 from matplotlib import colors as mcolors
 from time import time
 import sys
+import os
 
 global config, sim_id, script, cores
 
@@ -25,7 +26,7 @@ global config, sim_id, script, cores
 # num_loci = 4        # for now we just need one
 # pop_size = 5000
 # num_gens = 100
-migs = [0.001, 0.01, 0.1]
+# migs = [0.001, 0.01, 0.1]
 # pop_list = [100, 500, 1000]
 # innovation_rate = 0.005
 # MAXALLELES = 10000
@@ -53,7 +54,7 @@ def setup(parser):
 def main():
     start = time()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--experiment", help="provide name for experiment", required=True, type=str)
+    parser.add_argument("--experiment", help="provide name for experiment", required=True, type=str, default="test")
     parser.add_argument("--debug", help="turn on debugging output")
     parser.add_argument("--reps", help="Replicated populations per parameter set", type=int, default=1)
     parser.add_argument("--networkfile", help="Name of GML file representing the  network model for this simulation",
@@ -74,6 +75,9 @@ def main():
     parser.add_argument("--burnintime", type=int, help="How long to wait before making measurements? ", default=2000)
 
     config = parser.parse_args()
+
+    # setup output directories for writing
+    output_path = utils.setup_output(config.experiment)
 
     run_param=k_values
     ## initialize the output dictionary
@@ -171,6 +175,9 @@ def main():
         # output[param_value]=deepcopy(pop.dvars())
         # #print(output)
 
+
+
+
     sum_fig = plt.figure(figsize=(16,9))
     ax=sum_fig.add_subplot(111)
     iteration=-1
@@ -181,7 +188,8 @@ def main():
     ax.set_ylabel('Fst')
     ax.set_xlabel('Generations')
     plt.show()
-    sum_fig.savefig('sum_fig.png', bbox_inches='tight')
+    savefilename= output_path + "/sum_fig.png"
+    sum_fig.savefig(savefilename, bbox_inches='tight')
 
     rich_fig = plt.figure(figsize=(16,9))
     ax=rich_fig.add_subplot(111)
@@ -193,7 +201,8 @@ def main():
     ax.set_ylabel('Richness')
     ax.set_xlabel('Generations')
     plt.show()
-    rich_fig.savefig('richness.png', bbox_inches='tight')
+    savefilename = output_path + "/richness.png"
+    rich_fig.savefig(savefilename, bbox_inches='tight')
 
     ## output CI for the parameters
     if len(run_param) > 0:

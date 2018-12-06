@@ -9,6 +9,7 @@ import scipy.stats
 import math
 from simuPOP import demography
 import demography.network as network
+import os
 
 ### some functions to store stats at each timestep.
 def init_acumulators(pop, param):
@@ -102,3 +103,23 @@ def mean_confidence_interval(data, confidence=0.95):
     m, se = np.mean(a), scipy.stats.sem(a)
     h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
     return m, m-h, m+h
+
+def setup_output(experiment):
+    # create output directories
+    path = os.getcwd()
+    path = path + "/output/"
+    try:
+        os.mkdir(path)
+    except OSError:
+        print("Creation of the directory %s failed - it might already exist? " % path)
+    else:
+        print("Successfully created the directory %s " % path)
+    path = path + experiment
+
+    try:
+        os.mkdir(path)
+    except OSError:
+        print("Creation of the directory %s failed - it might already exist? " % path)
+    else:
+        print("Successfully created the directory %s " % path)
+    return path
