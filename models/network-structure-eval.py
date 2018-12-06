@@ -26,7 +26,7 @@ global config, sim_id, script, cores
 # num_loci = 4        # for now we just need one
 # pop_size = 5000
 # num_gens = 100
-# migs = [0.001, 0.01, 0.1]
+migs = [0.001, 0.01, 0.1]
 # pop_list = [100, 500, 1000]
 # innovation_rate = 0.005
 # MAXALLELES = 10000
@@ -39,7 +39,7 @@ global config, sim_id, script, cores
 
 output={}
 
-k_values=[2]
+#k_values = [2, 8, 16]
 
 def setup(parser):
     config = parser.parse_args()
@@ -51,8 +51,26 @@ def setup(parser):
     else:
         log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
+### some functions to store stats at each timestep.
+def init_acumulators(pop, param):
+    acumulators = param
+    for acumulator in acumulators:
+        if acumulator.endswith('_sp'):
+            pop.vars()[acumulator] = defaultdict(list)
+        else:
+            pop.vars()[acumulator] = []
+            pop.vars()['allele_frequencies'] = []
+            pop.vars()['haplotype_frequencies'] = []
+            pop.vars()['allele_count']=[]
+            pop.vars()['richness'] = []
+            pop.vars()['class_freq']=[]
+            pop.vars()['class_count']=[]
+            #pop.vars()['fst_mean']
+    return True
+
+
+
 def main():
-    start = time()
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", help="provide name for experiment", required=True, type=str, default="test")
     parser.add_argument("--debug", help="turn on debugging output")
@@ -64,11 +82,11 @@ def main():
                         required=True)
     parser.add_argument("--innovrate", help="Rate at which innovations occur in population as a per-locus rate", type=float, default=0.001)
     parser.add_argument("--simlength", help="Time at which simulation and sampling end, defaults to 3000 generations",
-                        type=int, default="3000")
+                        type=int, default="20")
     parser.add_argument("--popsize", help="Initial size of population for each community in the model", type=int, required=True)
     parser.add_argument("--migrationfraction", help="Fraction of population that migrates each time step", type=float, required=True, default=0.2)
     parser.add_argument("--seed", type=int, help="Seed for random generators to ensure replicability")
-    parser.add_argument("--k_values", nargs='+', help="list of k-values to explore [2,4,20,25]", required=True, default="2 20")
+    parser.add_argument( "--k_values", nargs='+', type=int, help="list of k-values to explore [e.g., 2 4 20 24", default=[])
     parser.add_argument("--sub_pops", type=int, help="Number of sub populations", required=True, default=10)
     parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=1000)
     parser.add_argument("--save_figs", type=bool, help="Save figures or not?", default=True)
@@ -79,7 +97,8 @@ def main():
     # setup output directories for writing
     output_path = utils.setup_output(config.experiment)
 
-    run_param=k_values
+    run_param=config.k_values
+
     ## initialize the output dictionary
     for k in run_param:
         output[k]=[]
@@ -115,14 +134,14 @@ def main():
 
         # The regional network model defines both of these, in order to configure an initial population for evolution
         # Construct the initial population
-        pops = sp.Population( size = networkmodel.get_initial_size(),
+        pops = sp.Population(size = networkmodel.get_initial_size(),
                              subPopNames = str(list(networkmodel.get_subpopulation_names())),
                              infoFields = 'migrate_to',
                              ploidy=1,
                              loci=config.numloci )
 
         ### now set up the activities
-        init_ops['acumulators'] = sp.PyOperator(utils.init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
+        init_ops['acumulators'] = sp.PyOperator(init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
         init_ops['Sex'] = sp.InitSex()
 
         init_ops['Freq'] = sp.InitGenotype(loci=list(range(config.numloci)),freq=distribution)
@@ -140,18 +159,29 @@ def main():
         post_ops['Stat-richness']=sp.Stat(alleleFreq=[0], haploFreq=[0], vars=['alleleFreq','haploFreq','alleleNum', 'genoNum'])
         post_ops['fst_acumulation'] = sp.PyOperator(utils.update_acumulator, param=['fst','F_st'])
         post_ops['richness_acumulation'] = sp.PyOperator(utils.update_richness_acumulator, param=('alleleFreq', 'Freq of Alleles'))
-        post_ops['class_richness']=sp.PyOperator(utils.sampleAlleleAndGenotypeFrequencies, param=(config.popsize,config.numloci))
+        post_ops['class_richness']=sp.PyOperator(utils.calculateAlleleAndGenotypeFrequencies, param=(config.popsize,config.numloci))
 
         mating_scheme = sp.RandomSelection()
         #mating_scheme=sp.RandomSelection(subPopSize=sub_pop_size)
 
         ## go simuPop go! evolve your way to the future!
         sim = sp.Simulator(pops) #, rep=3)
-
+        print("now evolving... k= %s" % param_value)
         sim.evolve(initOps=list(init_ops.values()), preOps=list(pre_ops.values()), postOps=list(post_ops.values()),
                    matingScheme=mating_scheme, gen=config.simlength)
 
-        print("now evolving... k= %s" % param_value)
+        # now make a figure of the Fst results
+        fig = plt.figure(figsize=(16, 9))
+        ax = fig.add_subplot(111)
+        for pop, mig in zip(sim.populations(), migs):
+            ax.plot(pop.dvars().fst, label='Migration rate %.4f' % mig)
+        ax.legend(loc=2)
+        ax.set_ylabel('FST')
+        ax.set_xlabel('Generation')
+        plt.show()
+
+        # copy output to the output list. interestingly there is a problem if this doesnt happen.
+        output[param_value] = deepcopy(pop.dvars())
 
         # # now make a figure of the Fst results
         # fig = plt.figure(figsize=(16, 9))
@@ -172,11 +202,8 @@ def main():
         # ax.set_ylabel('Richness')
         # ax.set_xlabel('Generation')
         # plt.show()
-        # output[param_value]=deepcopy(pop.dvars())
+
         # #print(output)
-
-
-
 
     sum_fig = plt.figure(figsize=(16,9))
     ax=sum_fig.add_subplot(111)
@@ -210,25 +237,26 @@ def main():
         for k in run_param:
             print("k - %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[4000:8000], confidence=0.95)))
 
-# # now make a figure of the haplotypeFreq results...
-# fig3 = plt.figure(figsize=(16, 9))
-# ax = fig3.add_subplot(111)
-# for pop, mig in zip(sim.populations(), migs):
-#     ax.plot(pop.dvars().alleleNum, label='Migration rate %.4f' % mig)
-# ax.legend(loc=2)
-# ax.set_ylabel('Allele Numbers')
-# ax.set_xlabel('Generation')
-# plt.show()
-# #
-# # now make a figure of the haplotypeFreq results...
-# fig4 = plt.figure(figsize=(16, 9))
-# ax = fig4.add_subplot(111)
-# for pop, mig in zip(sim.populations(), migs):
-#     ax.plot(pop.dvars().class_richness, label='Migration %.4f' % mig)
-# ax.legend(loc=2)
-# ax.set_ylabel(' Class Richness')
-# ax.set_xlabel('Generation')
-# plt.show()
+    # # now make a figure of the haplotypeFreq results...
+    # fig3 = plt.figure(figsize=(16, 9))
+    # ax = fig3.add_subplot(111)
+    # for pop, mig in zip(sim.populations(), migs):
+    #     ax.plot(pop.dvars().alleleNum, label='Migration rate %.4f' % mig)
+    # ax.legend(loc=2)
+    # ax.set_ylabel('Allele Numbers')
+    # ax.set_xlabel('Generation')
+    # plt.show()
+    # #
+    # # now make a figure of the haplotypeFreq results...
+    # fig4 = plt.figure(figsize=(16, 9))
+    # ax = fig4.add_subplot(111)
+    # for pop, mig in zip(sim.populations(), migs):
+    #     ax.plot(pop.dvars().class_richness, label='Migration %.4f' % mig)
+    # ax.legend(loc=2)
+    # ax.set_ylabel(' Class Richness')
+    # ax.set_xlabel('Generation')
+    # plt.show()
 
 if __name__ == "__main__":
     main()
+

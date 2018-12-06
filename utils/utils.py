@@ -11,24 +11,7 @@ from simuPOP import demography
 import demography.network as network
 import os
 
-### some functions to store stats at each timestep.
-def init_acumulators(pop, param):
-    acumulators = param
-    for acumulator in acumulators:
-        if acumulator.endswith('_sp'):
-            pop.vars()[acumulator] = defaultdict(list)
-        else:
-            pop.vars()[acumulator] = []
-            pop.vars()['allele_frequencies'] = []
-            pop.vars()['haplotype_frequencies'] = []
-            pop.vars()['allele_count']=[]
-            pop.vars()['richness'] = []
-            pop.vars()['class_freq']=[]
-            pop.vars()['class_count']=[]
-            #pop.vars()['fst_mean']
-    return True
-
-def update_acumulator(pop,  param):
+def update_acumulator(pop, param):
     acumulator, var = param
     #for acumulator, var in sorted(param.items()):
     log.debug("acumulator: %s var: %s" % (acumulator,var))
@@ -41,7 +24,7 @@ def update_acumulator(pop,  param):
         #output[run_param].append(deepcopy(pop.vars()[var]))
     return True
 
-def update_richness_acumulator(pop,  param):
+def update_richness_acumulator(pop, param):
     (acumulator, var) = param
     if  var.endswith('_sp'):
         for sp in range(pop.numSubPop()):
@@ -53,24 +36,7 @@ def update_richness_acumulator(pop,  param):
         #pop.vars()[acumulator].append(deepcopy(pop.vars()[var]))
     return True
 
-def constructUniformAllelicDistribution(numalleles):
-    """Constructs a uniform distribution of N alleles in the form of a frequency list.
-
-        Args:
-
-            numalleles (int):  Number of alleles present in the initial population.
-
-        Returns:
-
-            (list):  Array of floats, giving the initial frequency of N alleles.
-
-    """
-    divisor = 100.0 / numalleles
-    frac = divisor / 100.0
-    distribution = [frac] * numalleles
-    return distribution
-
-def sampleAlleleAndGenotypeFrequencies(pop,  param):
+def calculateAlleleAndGenotypeFrequencies(pop, param):
     (popsize, num_loci) = param
 
     sp.stat(pop, haploFreq = range(0, num_loci), vars=['haploFreq', 'haploNum'])
@@ -97,6 +63,24 @@ def sampleAlleleAndGenotypeFrequencies(pop,  param):
     pop.vars()['class_count'].append(class_count)
     return True
 
+def constructUniformAllelicDistribution(numalleles):
+    """Constructs a uniform distribution of N alleles in the form of a frequency list.
+
+        Args:
+
+            numalleles (int):  Number of alleles present in the initial population.
+
+        Returns:
+
+            (list):  Array of floats, giving the initial frequency of N alleles.
+
+    """
+    divisor = 100.0 / numalleles
+    frac = divisor / 100.0
+    distribution = [frac] * numalleles
+    return distribution
+
+
 def mean_confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)
     n = len(a)
@@ -104,7 +88,7 @@ def mean_confidence_interval(data, confidence=0.95):
     h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
     return m, m-h, m+h
 
-def setup_output(experiment):
+def setup_output(experiment="test"):
     # create output directories
     path = os.getcwd()
     path = path + "/output/"
