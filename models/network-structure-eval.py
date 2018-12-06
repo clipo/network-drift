@@ -8,7 +8,7 @@ import seaborn as sns
 sns.set_style('white')
 import matplotlib.pyplot as plt
 import demography.network as network
-import utils.utils as utils
+from utils import utils
 import simuPOP as sp
 from simuPOP import demography
 import logging as log
@@ -18,6 +18,7 @@ import argparse
 import uuid
 from matplotlib import colors as mcolors
 from time import time
+import sys
 
 global config, sim_id, script, cores
 
@@ -67,7 +68,7 @@ def main():
     parser.add_argument("--popsize", help="Initial size of population for each community in the model", type=int, required=True)
     parser.add_argument("--migrationfraction", help="Fraction of population that migrates each time step", type=float, required=True, default=0.2)
     parser.add_argument("--seed", type=int, help="Seed for random generators to ensure replicability")
-    parser.add_argument("--k_values", type=list, help="list of k-values to explore [2,4,20,25]", required=True, default=[2])
+    parser.add_argument("--k_values", nargs='+', help="list of k-values to explore [2,4,20,25]", required=True, default="2 20")
     parser.add_argument("--sub_pops", type=int, help="Number of sub populations", required=True, default=10)
     parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=1000)
     parser.add_argument("--save_figs", type=bool, help="Save figures or not?", default=True)
