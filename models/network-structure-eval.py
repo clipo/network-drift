@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import demography.network as network
 from utils import utils
 import simuPOP as sp
-from simuPOP import demography
 import logging as log
 import numpy as np
 import scipy.stats
