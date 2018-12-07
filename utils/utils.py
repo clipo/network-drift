@@ -69,7 +69,6 @@ def constructUniformAllelicDistribution(numalleles):
         Args:
 
             numalleles (int):  Number of alleles present in the initial population.
-
         Returns:
 
             (list):  Array of floats, giving the initial frequency of N alleles.
@@ -79,7 +78,6 @@ def constructUniformAllelicDistribution(numalleles):
     frac = divisor / 100.0
     distribution = [frac] * numalleles
     return distribution
-
 
 def mean_confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)

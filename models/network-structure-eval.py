@@ -69,7 +69,6 @@ def init_acumulators(pop, param):
     return True
 
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", help="provide name for experiment", required=True, type=str, default="test")
@@ -233,9 +232,12 @@ def main():
 
     ## output CI for the parameters
     if len(run_param) > 0:
+
+        startmeasure=int(config.simlength/2)
+        stopmeasure=config.simlength
         print("k value      mean            lower                upper")
         for k in run_param:
-            print("k - %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[4000:8000], confidence=0.95)))
+            print("k - %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[startmeasure:stopmeasure], confidence=0.95)))
 
     # # now make a figure of the haplotypeFreq results...
     # fig3 = plt.figure(figsize=(16, 9))
