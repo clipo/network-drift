@@ -51,23 +51,6 @@ def setup(parser):
     else:
         log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
-### some functions to store stats at each timestep.
-def init_acumulators(pop, param):
-    acumulators = param
-    for acumulator in acumulators:
-        if acumulator.endswith('_sp'):
-            pop.vars()[acumulator] = defaultdict(list)
-        else:
-            pop.vars()[acumulator] = []
-            pop.vars()['allele_frequencies'] = []
-            pop.vars()['haplotype_frequencies'] = []
-            pop.vars()['allele_count']=[]
-            pop.vars()['richness'] = []
-            pop.vars()['class_freq']=[]
-            pop.vars()['class_count']=[]
-            #pop.vars()['fst_mean']
-    return True
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -87,7 +70,7 @@ def main():
     parser.add_argument("--seed", type=int, help="Seed for random generators to ensure replicability")
     parser.add_argument( "--k_values", nargs='+', type=int, help="list of k-values to explore [e.g., 2 4 20 24", default=[])
     parser.add_argument("--sub_pops", type=int, help="Number of sub populations", required=True, default=10)
-    parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=1000)
+    parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=50)
     parser.add_argument("--save_figs", type=bool, help="Save figures or not?", default=True)
     parser.add_argument("--burnintime", type=int, help="How long to wait before making measurements? ", default=2000)
 
@@ -133,14 +116,14 @@ def main():
 
         # The regional network model defines both of these, in order to configure an initial population for evolution
         # Construct the initial population
-        pops = sp.Population(size = networkmodel.get_initial_size(),
+        pops = sp.Population(size = [sub_pop_size]*num_pops,
                              subPopNames = str(list(networkmodel.get_subpopulation_names())),
                              infoFields = 'migrate_to',
                              ploidy=1,
                              loci=config.numloci )
 
         ### now set up the activities
-        init_ops['acumulators'] = sp.PyOperator(init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
+        init_ops['acumulators'] = sp.PyOperator(utils.init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
         init_ops['Sex'] = sp.InitSex()
 
         init_ops['Freq'] = sp.InitGenotype(loci=list(range(config.numloci)),freq=distribution)
@@ -181,7 +164,13 @@ def main():
 
         # copy output to the output list. interestingly there is a problem if this doesnt happen.
         output[param_value] = deepcopy(pop.dvars())
+        sum=0
+        #print("length:  %s " % len(pop.genotype()))
+        #for n in range(0, len(pop.genotype())):
+        #    sum += pop.genotype().count(n)
+        #    print("loci %s num %s" % ( n, pop.genotype().count(n)))
 
+        #print ("sum: ", sum)
         # # now make a figure of the Fst results
         # fig = plt.figure(figsize=(16, 9))
         # ax = fig.add_subplot(111)
@@ -232,7 +221,6 @@ def main():
 
     ## output CI for the parameters
     if len(run_param) > 0:
-
         startmeasure=int(config.simlength/2)
         stopmeasure=config.simlength
         print("k value      mean            lower                upper")

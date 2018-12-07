@@ -11,6 +11,23 @@ from simuPOP import demography
 import demography.network as network
 import os
 
+### some functions to store stats at each timestep.
+def init_acumulators(pop, param):
+    acumulators = param
+    for acumulator in acumulators:
+        if acumulator.endswith('_sp'):
+            pop.vars()[acumulator] = defaultdict(list)
+        else:
+            pop.vars()[acumulator] = []
+            pop.vars()['allele_frequencies'] = []
+            pop.vars()['haplotype_frequencies'] = []
+            pop.vars()['allele_count']=[]
+            pop.vars()['richness'] = []
+            pop.vars()['class_freq']=[]
+            pop.vars()['class_count']=[]
+            #pop.vars()['fst_mean']
+    return True
+
 def update_acumulator(pop, param):
     acumulator, var = param
     #for acumulator, var in sorted(param.items()):
@@ -61,16 +78,14 @@ def calculateAlleleAndGenotypeFrequencies(pop, param):
     pop.vars()['richness'].append(num_classes)
     pop.vars()['class_freq'].append(class_freq)
     pop.vars()['class_count'].append(class_count)
+
     return True
 
 def constructUniformAllelicDistribution(numalleles):
     """Constructs a uniform distribution of N alleles in the form of a frequency list.
-
         Args:
-
             numalleles (int):  Number of alleles present in the initial population.
         Returns:
-
             (list):  Array of floats, giving the initial frequency of N alleles.
 
     """
