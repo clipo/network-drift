@@ -120,3 +120,34 @@ def setup_output(experiment="test"):
     else:
         print("Successfully created the directory %s " % path)
     return path
+
+def save_parameters(args, config, output_path):
+    '''
+    Save the arguments used to run the experiment into the output director
+    :param args:   the sys.argv string that contains the raw input
+    :param config: a list of all the possible configuration options
+    :param output_path: a path to the output directory
+    :return: True if completed
+    '''
+    f = open(output_path + "/parameters.txt", "w+")
+    f.write("Arguments used: %s\n" % args)
+    f.write("--experiment: %s\n" % config.experiment)
+    f.write("--debug: %s\n" % config.debug)
+    f.write("--reps: %s\n" % config.reps)
+    f.write("--networkfile: %s\n"% config.networkfile)
+    f.write("--debug: %s\n" % config.debug)
+    f.write("--numloci: %s\n" % config.numloci)
+    f.write("--maxinittraits: %s\n" % config.maxinittraits)
+    f.write("--innovrate: %s\n" % config.innovrate)
+    f.write("--simlength: %s\n" % config.simlength)
+    f.write("--popsize: %s\n" % config.popsize)
+    f.write("--migrationfraction: %s\n" % config.migrationfraction)
+    f.write("--seed: %s\n" % config.seed)
+    f.write("--k_values: %s\n" % config.k_values)
+    f.write("--sub_pops: %s\n" % config.sub_pops)
+    f.write("--maxalleles: %s\n" % config.maxalleles)
+    f.write("--save_figs: %s\n" % config.save_figs)
+    f.write("--burnintime: %s\n" % config.burnintime)
+    f.close()
+
+    return True

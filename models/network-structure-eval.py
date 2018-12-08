@@ -39,8 +39,6 @@ migs = [0.001, 0.01, 0.1]
 
 output={}
 
-#k_values = [2, 8, 16]
-
 def setup(parser):
     config = parser.parse_args()
     sim_id = uuid.uuid1().urn
@@ -50,7 +48,6 @@ def setup(parser):
         log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
     else:
         log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)s: %(message)s')
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -78,6 +75,9 @@ def main():
 
     # setup output directories for writing
     output_path = utils.setup_output(config.experiment)
+
+    # save parameters
+    utils.save_parameters(str(sys.argv), config, output_path)
 
     run_param=config.k_values
 
