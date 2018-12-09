@@ -148,6 +148,7 @@ def save_parameters(args, config, output_path):
     f.write("--maxalleles: %s\n" % config.maxalleles)
     f.write("--save_figs: %s\n" % config.save_figs)
     f.write("--burnintime: %s\n" % config.burnintime)
+    f.write("--rewiringprob: %s\n" % config.rewiringprob)
     f.close()
 
     return True

@@ -80,7 +80,7 @@ class NetworkModel(object):
         # prime the migration matrix
         if self.connectedness==self.sub_pops:
             self._cached_migration_matrix=self._spatialMigrRates()
-            print(self._cached_migration_matrix)
+            #print(self._cached_migration_matrix)
             self.connectedness=self.sub_pops-1
         else:
             self._cached_migration_matrix = self._calculate_fixed_migration_matrix()
@@ -99,7 +99,8 @@ class NetworkModel(object):
             k=self.connectedness
             if k==self.sub_pops:
                 k=k-1
-            network = nx.watts_strogatz_graph(self.sub_pops, k, 0)
+            network = nx.watts_strogatz_graph(self.sub_pops, k, self.rewiring_prob)
+            self.pos = nx.spring_layout(network, iterations=25)
             log.debug("network nodes: %s", '|'.join(sorted(str(list(network.nodes)))))
             self.network = network
             self.xy=self._set_xy_coordinates()
@@ -147,12 +148,12 @@ class NetworkModel(object):
         for (node1, node2, data) in self.network.edges(data=True):
             self.network.add_edge(node1, node2, weight=self.migration_fraction)
         g_mat = nx.to_numpy_matrix(self.network)
-        print("normed_matrix: ", g_mat)
+        log.debug("normed_matrix: ", g_mat)
         return g_mat.tolist()
 
     def _calculate_migration_matrix(self):
         g_mat = nx.to_numpy_matrix(self.network, weight=self.migration_fraction).astype(np.float)
-        print("g_mat: ", g_mat)
+        #print("g_mat: ", g_mat)
         # get the column totals
         rtot = np.sum(g_mat, axis=1)
         scaled = (g_mat / rtot) * self.migration_fraction
@@ -227,7 +228,7 @@ class NetworkModel(object):
         :return: nothing - should be a matplotlib plot
         """
         plt.subplot(111)
-        nx.draw(self.network,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
+        nx.draw(self.network,self.pos,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
         plt.show()
 
     def save_graph(self):
@@ -236,7 +237,7 @@ class NetworkModel(object):
         :return: nothing - should be saved file
         """
         name = "k-%s.png" % self.connectedness
-        nx.draw(self.network,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
+        nx.draw(self.network,self.pos,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
         plt.savefig(name)
 
     def __call__(self, pop):

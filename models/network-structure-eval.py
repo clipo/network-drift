@@ -19,6 +19,7 @@ from matplotlib import colors as mcolors
 from time import time
 import sys
 import os
+from collections import defaultdict
 
 global config, sim_id, script, cores
 
@@ -37,7 +38,7 @@ migs = [0.001, 0.01, 0.1]
 # save_state=True
 # burn_in_time = 4000
 
-output={}
+output=defaultdict(dict)
 
 def setup(parser):
     config = parser.parse_args()
@@ -70,6 +71,7 @@ def main():
     parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=50)
     parser.add_argument("--save_figs", type=bool, help="Save figures or not?", default=True)
     parser.add_argument("--burnintime", type=int, help="How long to wait before making measurements? ", default=2000)
+    parser.add_argument("--rewiringprob", type=float, help="Probability of random rewiring", default=0)
 
     config = parser.parse_args()
 
@@ -83,7 +85,7 @@ def main():
 
     ## initialize the output dictionary
     for k in run_param:
-        output[k]=[]
+        output[k]={}
 
     # set up the frequencies for the alleles in each loci. Here assuming a uniform distribution as a starting point
     distribution = utils.constructUniformAllelicDistribution(config.maxinittraits)
@@ -128,13 +130,13 @@ def main():
 
         init_ops['Freq'] = sp.InitGenotype(loci=list(range(config.numloci)),freq=distribution)
 
-        post_ops['Innovate']=sp.KAlleleMutator(k=config.maxalleles, rates=config.innovrate, loci=sp.ALL_AVAIL)
+        post_ops['Innovate'] = sp.KAlleleMutator(k=config.maxalleles, rates=config.innovrate, loci=sp.ALL_AVAIL)
         #post_ops['mig'] = sp.Migrator(demography.migrIslandRates(migration_rate, num_pops)) #, reps=[i])
-        post_ops['mig']=sp.Migrator(rate=networkmodel.get_migration_matrix())
+        post_ops['mig']=sp.Migrator(rate=networkmodel.get_migration_matrix()) #, reps=[3])
         #for i, mig in enumerate(migs):
         #        post_ops['mig-%d' % i] = sp.Migrator(demography.migrIslandRates(mig, num_pops), reps=[i])
 
-        post_ops['Stat-fst'] =sp.Stat(structure=sp.ALL_AVAIL)
+        post_ops['Stat-fst'] = sp.Stat(structure=sp.ALL_AVAIL)
         #post_ops['haploFreq']=sp.stat(pops, haploFreq=[0], vars=['haploFreq', 'haploNum'])
         #post_ops['alleleFreq']=sp.stat(pops, alleleFreq=sp.ALL_AVAIL)
 
@@ -147,7 +149,7 @@ def main():
         #mating_scheme=sp.RandomSelection(subPopSize=sub_pop_size)
 
         ## go simuPop go! evolve your way to the future!
-        sim = sp.Simulator(pops) #, rep=3)
+        sim = sp.Simulator(pops, rep=config.reps)
         print("now evolving... k= %s" % param_value)
         sim.evolve(initOps=list(init_ops.values()), preOps=list(pre_ops.values()), postOps=list(post_ops.values()),
                    matingScheme=mating_scheme, gen=config.simlength)
@@ -155,16 +157,19 @@ def main():
         # now make a figure of the Fst results
         fig = plt.figure(figsize=(16, 9))
         ax = fig.add_subplot(111)
-        for pop, mig in zip(sim.populations(), migs):
-            ax.plot(pop.dvars().fst, label='Migration rate %.4f' % mig)
+        count=0
+        for pop in sim.populations():
+            ax.plot(pop.dvars().fst, label='Replicate: %s' % count)
+            output[param_value][count] = deepcopy(pop.dvars())
+            count += 1
         ax.legend(loc=2)
         ax.set_ylabel('FST')
         ax.set_xlabel('Generation')
         plt.show()
 
         # copy output to the output list. interestingly there is a problem if this doesnt happen.
-        output[param_value] = deepcopy(pop.dvars())
-        sum=0
+        #output[param_value] = deepcopy(pop.dvars())
+
         #print("length:  %s " % len(pop.genotype()))
         #for n in range(0, len(pop.genotype())):
         #    sum += pop.genotype().count(n)
@@ -198,7 +203,13 @@ def main():
     iteration=-1
     for k in run_param:
         iteration += 1
-        ax.plot(output[k].fst, color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k - %s' % k)
+        # only label the first one
+        for n in range(config.reps):
+            if n==0:
+                ax.plot(output[k][n].fst, color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k = %s' % k)
+            else:
+                ax.plot(output[k][n].fst,
+                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
     ax.legend(loc=2)
     ax.set_ylabel('Fst')
     ax.set_xlabel('Generations')
@@ -211,7 +222,14 @@ def main():
     iteration=-1
     for k in run_param:
         iteration+=1
-        ax.plot(output[k].richness, color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k - %s' % k)
+        # only add a label for the first one (not all the replicates)
+        for n in range(config.reps):
+            if n==0:
+                ax.plot(output[k][n].richness,
+                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label = 'k = %s' % k)
+            else:
+                ax.plot(output[k][n].richness,
+                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
     ax.legend(loc=2)
     ax.set_ylabel('Richness')
     ax.set_xlabel('Generations')
@@ -220,12 +238,67 @@ def main():
     rich_fig.savefig(savefilename, bbox_inches='tight')
 
     ## output CI for the parameters
-    if len(run_param) > 0:
-        startmeasure=int(config.simlength/2)
-        stopmeasure=config.simlength
-        print("k value      mean            lower                upper")
-        for k in run_param:
-            print("k - %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[startmeasure:stopmeasure], confidence=0.95)))
+
+    summary_fig = plt.figure(figsize=(16, 9))
+    ax = summary_fig.add_subplot(111)
+
+    iteration = -1
+    for k in run_param:
+        iteration += 1
+        CI_average = []
+        CI_min = []
+        CI_max = []
+        for t in range(len(output[k][0].fst)):
+            point_in_time = []
+            for n in range(config.reps):
+                list_of_points = list(output[k][n].fst)
+                point_in_time.append(list_of_points[t])
+            (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
+            CI_average.append(ave)
+            CI_min.append(min)
+            CI_max.append(max)
+        ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s' % k)
+        ax.plot(list(CI_min), "--", color="0.5")
+        ax.plot(list(CI_max), "--", color="0.5")
+        ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
+        ax.legend(loc=2)
+        ax.set_ylabel('Fst')
+        ax.set_xlabel('Generation')
+    plt.show()
+    savefilename = output_path + "/summary-ci.png"
+    summary_fig.savefig(savefilename, bbox_inches='tight')
+
+    ## now the richness graph
+    richness_sum_fig = plt.figure(figsize=(16, 9))
+    ax = richness_sum_fig.add_subplot(111)
+
+    iteration=-1
+    for k in run_param:
+        iteration += 1
+        CI_average = []
+        CI_min = []
+        CI_max = []
+        for t in range(len(output[k][0].richness)):
+            point_in_time = []
+            for n in range(config.reps):
+                list_of_points = list(output[k][n].richness)
+                point_in_time.append(list_of_points[t])
+            (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
+            CI_average.append(ave)
+            CI_min.append(min)
+            CI_max.append(max)
+        ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s' % k)
+        ax.plot(list(CI_min), "--", color="0.5")
+        ax.plot(list(CI_max), "--", color="0.5")
+        ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
+        ax.legend(loc=2)
+        ax.set_ylabel('Richness')
+        ax.set_xlabel('Generation')
+    plt.show()
+    savefilename = output_path + "/richness-ci.png"
+    richness_sum_fig.savefig(savefilename, bbox_inches='tight')
+
+    #print("k = %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[startmeasure:stopmeasure], confidence=0.95)))
 
     # # now make a figure of the haplotypeFreq results...
     # fig3 = plt.figure(figsize=(16, 9))
