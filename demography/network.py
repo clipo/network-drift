@@ -99,7 +99,7 @@ class NetworkModel(object):
             k=self.connectedness
             if k==self.sub_pops:
                 k=k-1
-            network = nx.watts_strogatz_graph(self.sub_pops, k, self.rewiring_prob)
+            network = nx.watts_strogatz_graph(int(self.sub_pops), k, self.rewiring_prob)
             self.pos = nx.spring_layout(network, iterations=25)
             log.debug("network nodes: %s", '|'.join(sorted(str(list(network.nodes)))))
             self.network = network

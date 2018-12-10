@@ -67,7 +67,7 @@ def main():
     parser.add_argument("--migrationfraction", help="Fraction of population that migrates each time step", type=float, required=True, default=0.2)
     parser.add_argument("--seed", type=int, help="Seed for random generators to ensure replicability")
     parser.add_argument( "--k_values", nargs='+', type=int, help="list of k-values to explore [e.g., 2 4 20 24", default=[])
-    parser.add_argument("--sub_pops", type=int, help="Number of sub populations", required=True, default=10)
+    parser.add_argument("--sub_pops", nargs='+', help="Number of sub populations", required=True, default=[10])
     parser.add_argument("--maxalleles", type=int, help="Maximum number of alleles", default=50)
     parser.add_argument("--save_figs", type=bool, help="Save figures or not?", default=True)
     parser.add_argument("--burnintime", type=int, help="How long to wait before making measurements? ", default=2000)
@@ -81,135 +81,143 @@ def main():
     # save parameters
     utils.save_parameters(str(sys.argv), config, output_path)
 
-    run_param=config.k_values
+    k_run_values=config.k_values
+    subpop_run_values = config.sub_pops
+
+    ## make sure the k values are less than # of subpops and > 1
+    for k in k_run_values:
+        for subnum in subpop_run_values:
+            if int(k) > int(subnum) or int(k) < 2:
+                print("k values can not be greater than the number of sub populations. k = %s subpops = %s \n" % (k, subnum))
+                sys.exit()
 
     ## initialize the output dictionary
-    for k in run_param:
-        output[k]={}
+    for k in k_run_values:
+        for sb in subpop_run_values:
+            output[k][sb]={}
 
     # set up the frequencies for the alleles in each loci. Here assuming a uniform distribution as a starting point
     distribution = utils.constructUniformAllelicDistribution(config.maxinittraits)
 
     iteration_number=-1
-    for param_value in run_param:
-        iteration_number += 1
-        ## these are lists of things that simuPop will do at different stages
-        init_ops = OrderedDict()
-        pre_ops = OrderedDict()
-        post_ops = OrderedDict()
+    for k in k_run_values:
+        for subnum in subpop_run_values:
+            iteration_number += 1
+            ## these are lists of things that simuPop will do at different stages
+            init_ops = OrderedDict()
+            pre_ops = OrderedDict()
+            post_ops = OrderedDict()
 
-        # Construct a demographic model from a collection of network slices which represent a temporal network
-        # of changing subpopulations and interaction strengths.  This object is Callable, and simply is handed
-        # to the mating function which applies it during the copying process
-        #networkmodel = NetworkModel( networkmodel="/Users/clipo/Documents/PycharmProjects/RapaNuiSim/notebooks/test_graph.gml",
-        networkmodel = network.NetworkModel( networkmodel="smallworld",
-                                             simulation_id=config.experiment,
-                                             sim_length=config.simlength,
-                                             burn_in_time=config.burnintime,
-                                             initial_subpop_size=config.popsize,
-                                             migrationfraction=config.migrationfraction,
-                                             sub_pops=config.sub_pops,
-                                             connectedness=param_value, # if 0, then distance decay
-                                             save_figs=config.save_figs,
-                                             network_iteration=iteration_number)
+            # Construct a demographic model from a collection of network slices which represent a temporal network
+            # of changing subpopulations and interaction strengths.  This object is Callable, and simply is handed
+            # to the mating function which applies it during the copying process
+            #networkmodel = NetworkModel( networkmodel="/Users/clipo/Documents/PycharmProjects/RapaNuiSim/notebooks/test_graph.gml",
+            networkmodel = network.NetworkModel( networkmodel="smallworld",
+                                                 simulation_id=config.experiment,
+                                                 sim_length=config.simlength,
+                                                 burn_in_time=config.burnintime,
+                                                 initial_subpop_size=config.popsize,
+                                                 migrationfraction=config.migrationfraction,
+                                                 sub_pops=subnum,
+                                                 connectedness=k, # if 0, then distance decay
+                                                 save_figs=config.save_figs,
+                                                 network_iteration=iteration_number)
 
-        num_pops = networkmodel.get_subpopulation_number()
-        sub_pop_size = int(config.popsize / num_pops)
+            num_pops = networkmodel.get_subpopulation_number()
+            sub_pop_size = int(config.popsize / num_pops)
 
-        # The regional network model defines both of these, in order to configure an initial population for evolution
-        # Construct the initial population
-        pops = sp.Population(size = [sub_pop_size]*num_pops,
-                             subPopNames = str(list(networkmodel.get_subpopulation_names())),
-                             infoFields = 'migrate_to',
-                             ploidy=1,
-                             loci=config.numloci )
+            # The regional network model defines both of these, in order to configure an initial population for evolution
+            # Construct the initial population
+            pops = sp.Population(size = [sub_pop_size]*num_pops,
+                                 subPopNames = str(list(networkmodel.get_subpopulation_names())),
+                                 infoFields = 'migrate_to',
+                                 ploidy=1,
+                                 loci=config.numloci )
 
-        ### now set up the activities
-        init_ops['acumulators'] = sp.PyOperator(utils.init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
-        init_ops['Sex'] = sp.InitSex()
+            ### now set up the activities
+            init_ops['acumulators'] = sp.PyOperator(utils.init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
+            init_ops['Sex'] = sp.InitSex()
 
-        init_ops['Freq'] = sp.InitGenotype(loci=list(range(config.numloci)),freq=distribution)
+            init_ops['Freq'] = sp.InitGenotype(loci=list(range(config.numloci)),freq=distribution)
 
-        post_ops['Innovate'] = sp.KAlleleMutator(k=config.maxalleles, rates=config.innovrate, loci=sp.ALL_AVAIL)
-        #post_ops['mig'] = sp.Migrator(demography.migrIslandRates(migration_rate, num_pops)) #, reps=[i])
-        post_ops['mig']=sp.Migrator(rate=networkmodel.get_migration_matrix()) #, reps=[3])
-        #for i, mig in enumerate(migs):
-        #        post_ops['mig-%d' % i] = sp.Migrator(demography.migrIslandRates(mig, num_pops), reps=[i])
+            post_ops['Innovate'] = sp.KAlleleMutator(k=config.maxalleles, rates=config.innovrate, loci=sp.ALL_AVAIL)
+            post_ops['mig']=sp.Migrator(rate=networkmodel.get_migration_matrix()) #, reps=[3])
+            #for i, mig in enumerate(migs):
+            #        post_ops['mig-%d' % i] = sp.Migrator(demography.migrIslandRates(mig, num_pops), reps=[i])
 
-        post_ops['Stat-fst'] = sp.Stat(structure=sp.ALL_AVAIL)
-        #post_ops['haploFreq']=sp.stat(pops, haploFreq=[0], vars=['haploFreq', 'haploNum'])
-        #post_ops['alleleFreq']=sp.stat(pops, alleleFreq=sp.ALL_AVAIL)
+            post_ops['Stat-fst'] = sp.Stat(structure=sp.ALL_AVAIL)
 
-        post_ops['Stat-richness']=sp.Stat(alleleFreq=[0], haploFreq=[0], vars=['alleleFreq','haploFreq','alleleNum', 'genoNum'])
-        post_ops['fst_acumulation'] = sp.PyOperator(utils.update_acumulator, param=['fst','F_st'])
-        post_ops['richness_acumulation'] = sp.PyOperator(utils.update_richness_acumulator, param=('alleleFreq', 'Freq of Alleles'))
-        post_ops['class_richness']=sp.PyOperator(utils.calculateAlleleAndGenotypeFrequencies, param=(config.popsize,config.numloci))
+            post_ops['Stat-richness']=sp.Stat(alleleFreq=[0], haploFreq=[0], vars=['alleleFreq','haploFreq','alleleNum', 'genoNum'])
+            post_ops['fst_acumulation'] = sp.PyOperator(utils.update_acumulator, param=['fst','F_st'])
+            post_ops['richness_acumulation'] = sp.PyOperator(utils.update_richness_acumulator, param=('alleleFreq', 'Freq of Alleles'))
+            post_ops['class_richness']=sp.PyOperator(utils.calculateAlleleAndGenotypeFrequencies, param=(config.popsize,config.numloci))
 
-        mating_scheme = sp.RandomSelection()
-        #mating_scheme=sp.RandomSelection(subPopSize=sub_pop_size)
+            mating_scheme = sp.RandomSelection()
+            #mating_scheme=sp.RandomSelection(subPopSize=sub_pop_size)
 
-        ## go simuPop go! evolve your way to the future!
-        sim = sp.Simulator(pops, rep=config.reps)
-        print("now evolving... k= %s" % param_value)
-        sim.evolve(initOps=list(init_ops.values()), preOps=list(pre_ops.values()), postOps=list(post_ops.values()),
-                   matingScheme=mating_scheme, gen=config.simlength)
+            ## go simuPop go! evolve your way to the future!
+            sim = sp.Simulator(pops, rep=config.reps)
+            print("now evolving... k = %s with sub_pops = %s" % (k,subnum))
+            sim.evolve(initOps=list(init_ops.values()), preOps=list(pre_ops.values()), postOps=list(post_ops.values()),
+                       matingScheme=mating_scheme, gen=config.simlength)
 
-        # now make a figure of the Fst results
-        fig = plt.figure(figsize=(16, 9))
-        ax = fig.add_subplot(111)
-        count=0
-        for pop in sim.populations():
-            ax.plot(pop.dvars().fst, label='Replicate: %s' % count)
-            output[param_value][count] = deepcopy(pop.dvars())
-            count += 1
-        ax.legend(loc=2)
-        ax.set_ylabel('FST')
-        ax.set_xlabel('Generation')
-        plt.show()
+            # now make a figure of the Fst results
+            fig = plt.figure(figsize=(16, 9))
+            ax = fig.add_subplot(111)
+            count=0
+            for pop in sim.populations():
+                ax.plot(pop.dvars().fst, label='Replicate: %s' % count)
+                output[k][subnum][count] = deepcopy(pop.dvars())
+                count += 1
+            ax.legend(loc=2)
+            ax.set_ylabel('FST')
+            ax.set_xlabel('Generation')
+            plt.show()
 
-        # copy output to the output list. interestingly there is a problem if this doesnt happen.
-        #output[param_value] = deepcopy(pop.dvars())
+            # copy output to the output list. interestingly there is a problem if this doesnt happen.
+            #output[param_value] = deepcopy(pop.dvars())
 
-        #print("length:  %s " % len(pop.genotype()))
-        #for n in range(0, len(pop.genotype())):
-        #    sum += pop.genotype().count(n)
-        #    print("loci %s num %s" % ( n, pop.genotype().count(n)))
+            #print("length:  %s " % len(pop.genotype()))
+            #for n in range(0, len(pop.genotype())):
+            #    sum += pop.genotype().count(n)
+            #    print("loci %s num %s" % ( n, pop.genotype().count(n)))
 
-        #print ("sum: ", sum)
-        # # now make a figure of the Fst results
-        # fig = plt.figure(figsize=(16, 9))
-        # ax = fig.add_subplot(111)
-        # for pop, mig in zip(sim.populations(), migs):
-        #     ax.plot(pop.dvars().fst, label='Migration rate %.4f' % mig)
-        # ax.legend(loc=2)
-        # ax.set_ylabel('FST')
-        # ax.set_xlabel('Generation')
-        # plt.show()
-        #
-        # # # now make a figure of richness.
-        # fig2 = plt.figure(figsize=(16, 9))
-        # ax = fig2.add_subplot(111)
-        # for pop, mig in zip(sim.populations(), migs):
-        #     ax.plot(pop.dvars().richness, label='Migration rate %.4f' % mig)
-        # ax.legend(loc=2)
-        # ax.set_ylabel('Richness')
-        # ax.set_xlabel('Generation')
-        # plt.show()
+            #print ("sum: ", sum)
+            # # now make a figure of the Fst results
+            # fig = plt.figure(figsize=(16, 9))
+            # ax = fig.add_subplot(111)
+            # for pop, mig in zip(sim.populations(), migs):
+            #     ax.plot(pop.dvars().fst, label='Migration rate %.4f' % mig)
+            # ax.legend(loc=2)
+            # ax.set_ylabel('FST')
+            # ax.set_xlabel('Generation')
+            # plt.show()
+            #
+            # # # now make a figure of richness.
+            # fig2 = plt.figure(figsize=(16, 9))
+            # ax = fig2.add_subplot(111)
+            # for pop, mig in zip(sim.populations(), migs):
+            #     ax.plot(pop.dvars().richness, label='Migration rate %.4f' % mig)
+            # ax.legend(loc=2)
+            # ax.set_ylabel('Richness')
+            # ax.set_xlabel('Generation')
+            # plt.show()
 
-        # #print(output)
+            # #print(output)
 
     sum_fig = plt.figure(figsize=(16,9))
     ax=sum_fig.add_subplot(111)
     iteration=-1
-    for k in run_param:
-        iteration += 1
-        # only label the first one
-        for n in range(config.reps):
-            if n==0:
-                ax.plot(output[k][n].fst, color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k = %s' % k)
-            else:
-                ax.plot(output[k][n].fst,
-                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
+    for k in k_run_values:
+        for subnum in subpop_run_values:
+            iteration += 1
+            # only label the first one
+            for n in range(config.reps):
+                if n==0:
+                    ax.plot(output[k][subnum][n].fst, color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k = %s subpops = %s' % (k, subnum))
+                else:
+                    ax.plot(output[k][subnum][n].fst,
+                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
     ax.legend(loc=2)
     ax.set_ylabel('Fst')
     ax.set_xlabel('Generations')
@@ -220,16 +228,17 @@ def main():
     rich_fig = plt.figure(figsize=(16,9))
     ax=rich_fig.add_subplot(111)
     iteration=-1
-    for k in run_param:
-        iteration+=1
-        # only add a label for the first one (not all the replicates)
-        for n in range(config.reps):
-            if n==0:
-                ax.plot(output[k][n].richness,
-                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label = 'k = %s' % k)
-            else:
-                ax.plot(output[k][n].richness,
-                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
+    for k in k_run_values:
+        for sb in subpop_run_values:
+            iteration+=1
+            # only add a label for the first one (not all the replicates)
+            for n in range(config.reps):
+                if n==0:
+                    ax.plot(output[k][subnum][n].richness,
+                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration], label='k = %s subpops = %s' % (k, subnum))
+                else:
+                    ax.plot(output[k][subnum][n].richness,
+                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
     ax.legend(loc=2)
     ax.set_ylabel('Richness')
     ax.set_xlabel('Generations')
@@ -243,27 +252,28 @@ def main():
     ax = summary_fig.add_subplot(111)
 
     iteration = -1
-    for k in run_param:
-        iteration += 1
-        CI_average = []
-        CI_min = []
-        CI_max = []
-        for t in range(len(output[k][0].fst)):
-            point_in_time = []
-            for n in range(config.reps):
-                list_of_points = list(output[k][n].fst)
-                point_in_time.append(list_of_points[t])
-            (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
-            CI_average.append(ave)
-            CI_min.append(min)
-            CI_max.append(max)
-        ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s' % k)
-        ax.plot(list(CI_min), "--", color="0.5")
-        ax.plot(list(CI_max), "--", color="0.5")
-        ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-        ax.legend(loc=2)
-        ax.set_ylabel('Fst')
-        ax.set_xlabel('Generation')
+    for k in k_run_values:
+        for subnum in subpop_run_values:
+            iteration += 1
+            CI_average = []
+            CI_min = []
+            CI_max = []
+            for t in range(len(output[k][subnum][0].fst)):
+                point_in_time = []
+                for n in range(config.reps):
+                    list_of_points = list(output[k][subnum][n].fst)
+                    point_in_time.append(list_of_points[t])
+                (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
+                CI_average.append(ave)
+                CI_min.append(min)
+                CI_max.append(max)
+            ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s subpops = %s' % (k, subnum))
+            ax.plot(list(CI_min), "--", color="0.5")
+            ax.plot(list(CI_max), "--", color="0.5")
+            ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
+    ax.legend(loc=2)
+    ax.set_ylabel('Fst')
+    ax.set_xlabel('Generation')
     plt.show()
     savefilename = output_path + "/summary-ci.png"
     summary_fig.savefig(savefilename, bbox_inches='tight')
@@ -273,27 +283,28 @@ def main():
     ax = richness_sum_fig.add_subplot(111)
 
     iteration=-1
-    for k in run_param:
-        iteration += 1
-        CI_average = []
-        CI_min = []
-        CI_max = []
-        for t in range(len(output[k][0].richness)):
-            point_in_time = []
-            for n in range(config.reps):
-                list_of_points = list(output[k][n].richness)
-                point_in_time.append(list_of_points[t])
-            (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
-            CI_average.append(ave)
-            CI_min.append(min)
-            CI_max.append(max)
-        ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s' % k)
-        ax.plot(list(CI_min), "--", color="0.5")
-        ax.plot(list(CI_max), "--", color="0.5")
-        ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-        ax.legend(loc=2)
-        ax.set_ylabel('Richness')
-        ax.set_xlabel('Generation')
+    for k in k_run_values:
+        for subnum in subpop_run_values:
+            iteration += 1
+            CI_average = []
+            CI_min = []
+            CI_max = []
+            for t in range(len(output[k][subnum][0].richness)):
+                point_in_time = []
+                for n in range(config.reps):
+                    list_of_points = list(output[k][subnum][n].richness)
+                    point_in_time.append(list_of_points[t])
+                (ave, min, max) = utils.mean_confidence_interval(point_in_time, confidence=0.95)
+                CI_average.append(ave)
+                CI_min.append(min)
+                CI_max.append(max)
+            ax.plot(list(CI_average), color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],label='k = %s subpops = %s' % (k, subnum))
+            ax.plot(list(CI_min), "--", color="0.5")
+            ax.plot(list(CI_max), "--", color="0.5")
+            ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
+    ax.legend(loc=2)
+    ax.set_ylabel('Richness')
+    ax.set_xlabel('Generation')
     plt.show()
     savefilename = output_path + "/richness-ci.png"
     richness_sum_fig.savefig(savefilename, bbox_inches='tight')
