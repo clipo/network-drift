@@ -56,28 +56,18 @@ def count_traits_in_subpops(pop, param):
     '''
     (num_loci, numSubPops) = param
     sp.stat(pop, haploFreq=range(0,num_loci), vars=['haploFreq_sp', 'haploNum_sp'], subPops=sp.ALL_AVAIL)
-    from simuPOP.utils import viewVars
-    for subPop in range(numSubPops):
-        #viewVars(pop.vars(subPop), gui=False)
-        #print("subpop: %s" % subPop)
+
+    traits_in_subpops = defaultdict(int)
+
+    # now count for all the subpops
+    for subPop in range(0,numSubPops):
         key= list(pop.vars(subPop)['haploNum'].keys())
         #traits_n_counts = pop.vars(subPop)['haploNum'][key[0]]
         haplotype_count_map= list(pop.vars(subPop)['haploNum'][key[0]].keys())
         for loci_allele_tuple in haplotype_count_map:
-            pop.vars()['pop_count'][loci_allele_tuple] += 1
-    return True
+            traits_in_subpops[str(loci_allele_tuple)] +=1
 
-def sum_traits_in_subpops(pop, param):
-    '''
-    count the # of subpops each trait is in -- return with #s for those that are 1, 2, <10%, <20%, <50%
-    This produces a dict at every generation with values for 1,2,<10%, <20%, <50%
-    :param pop: PyOperator provides. structure=False here (we want the full population), numpops
-    :return: True
-    '''
-    numSubPops=param
-    #print(list(pop.vars()['pop_count']))
-    #for key,val in list(pop.vars()['pop_count'].items()):
-    #    print (" key: %s val: %s" % (key,val))
+    pop.vars()['pop_count'] = traits_in_subpops
 
     vals=pop.vars()['pop_count'].values()
     ones=twos=fivepercent=tenpercent=twentypercent=fiftypercent=0

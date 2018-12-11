@@ -142,9 +142,8 @@ def main():
         post_ops['fst_acumulation'] = sp.PyOperator(utils.update_acumulator, param=['fst','F_st'])
         post_ops['richness_acumulation'] = sp.PyOperator(utils.update_richness_acumulator, param=('alleleFreq', 'Freq of Alleles'))
         post_ops['class_richness']=sp.PyOperator(utils.calculateAlleleAndGenotypeFrequencies, param=(config.popsize,config.numloci))
-        post_ops['clear_subpop_counts'] = sp.PyOperator(utils.init_count_traits_in_subpops)
+        #post_ops['clear_subpop_counts'] = sp.PyOperator(utils.init_count_traits_in_subpops)
         post_ops['count_traits_in_subpops'] = sp.PyOperator(utils.count_traits_in_subpops, param=(config.numloci,num_pops), subPops=sp.ALL_AVAIL)
-        post_ops['sum_traits_in_subpops'] = sp.PyOperator(utils.sum_traits_in_subpops, param=(num_pops))
 
         mating_scheme = sp.RandomSelection()
 
@@ -198,7 +197,7 @@ def main():
 
         # #print(output)
 
-    ## draw traits in 10% or fewer of the subpops
+    ## draw traits in 1s or 2s of the subpops
     subpop_fig = plt.figure(figsize=(16,9))
     ax=subpop_fig.add_subplot(111)
     iteration = -1
@@ -206,47 +205,25 @@ def main():
         iteration += 1
         # only label the first one
         for n in range(config.reps):
-            iteration += 1
-            # only label the first one
-            for n in range(config.reps):
-                if n == 0:
-                    ax.plot(output[k][n].ones,
+            if n == 0:
+                #print(output[k][n].ones)
+                ax.plot(output[k][n].ones,
+                    color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
+                        label='k = %s - traits in just one subpopulation' % k)
+                ax.plot(output[k][n].twos, "--",
                         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                            label='traits in just one subpopulation')
-                    ax.plot(output[k][n].twos, "--",
-                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                            label='traits in just two or fewer subpopulations')
-                    # ax.plot(output[k][n].fivepercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                    #         label='traits in less than 5% of the subpopulations')
-                    # ax.plot(output[k][n].tenpercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                    #         label='traits in less than 10% of the subpopulations')
-                    # ax.plot(output[k][n].twentypercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                    #         label='traits in less than 20% of the subpopulations')
-                    # ax.plot(output[k][n].fiftypercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration],
-                    #         label='traits in less than fifty percent of the subpopulations')
-                else:
-                    ax.plot(output[k][n].ones,
-                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-                    ax.plot(output[k][n].twos,"--",
-                            color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-                    # ax.plot(output[k][n].fivepercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-                    # ax.plot(output[k][n].tenpercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-                    # ax.plot(output[k][n].twentypercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-                    # ax.plot(output[k][n].fiftypercent,
-                    #         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-        ax.legend(loc=2)
-        ax.set_ylabel('Number of Sub-Populations')
-        ax.set_xlabel('Generations')
-        plt.show()
-        savefilename = output_path + "/subpop_fig.png"
-        subpop_fig.savefig(savefilename, bbox_inches='tight')
+                        label='k = %s - traits in just two or fewer subpopulations'% k)
+            else:
+                ax.plot(output[k][n].ones,
+                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
+                ax.plot(output[k][n].twos,"--",
+                        color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
+    ax.legend(loc=2)
+    ax.set_ylabel('Numbers of Traits')
+    ax.set_xlabel('Generations')
+    plt.show()
+    savefilename = output_path + "/subpop_fig.png"
+    subpop_fig.savefig(savefilename, bbox_inches='tight')
 
     sum_fig = plt.figure(figsize=(16,9))
     ax=sum_fig.add_subplot(111)
