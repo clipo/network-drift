@@ -10,8 +10,98 @@ import math
 from simuPOP import demography
 import demography.network as network
 import os
+from collections import Counter
 
 ### some functions to store stats at each timestep.
+
+def init_count_traits_in_subpops(pop):
+    '''
+    Count traits in the overall population - zero out the dictionary for each loci/allele
+    combination in the loci/allele trait space
+    :param pop: the population object - this is passed by simuPop in the PyOperator call.
+    :return: True
+    '''
+    pop.vars()['pop_count']=defaultdict(int)
+    return True
+
+def classify(subpops,val):
+    '''
+    determine which class each value is in
+    :param subpops: number of subpops
+    :param val: the value to check
+    :return: a list with the category
+    '''
+    res = []
+    if val == 1:
+        res.append('= 1')
+    if val == 2:
+        res.append('= 2')
+    if val < (int(int(subpops)*.05)):
+        res.append('< 5%')
+    if val < (int(int(subpops)*.10)):
+        res.append('< 10%')
+    if val < (int(int(subpops)*.2)):
+        res.append('< 20%')
+    if val < (int(int(subpops)*.5)):
+        res.append('< 50%')
+    return res
+
+def count_traits_in_subpops(pop, param):
+    '''
+    Count the number of subpops in which each trait occurs (1-numSubPops)
+    combination in the loci/allele trait space
+    :param pop: the population object - this is passed by simuPop in the PyOperator call.
+    :param param: in this case pass the # of loci
+    :return: True
+    '''
+    (num_loci, numSubPops) = param
+    sp.stat(pop, haploFreq=range(0,num_loci), vars=['haploFreq_sp', 'haploNum_sp'], subPops=sp.ALL_AVAIL)
+    from simuPOP.utils import viewVars
+    for subPop in range(numSubPops):
+        #viewVars(pop.vars(subPop), gui=False)
+        #print("subpop: %s" % subPop)
+        key= list(pop.vars(subPop)['haploNum'].keys())
+        #traits_n_counts = pop.vars(subPop)['haploNum'][key[0]]
+        haplotype_count_map= list(pop.vars(subPop)['haploNum'][key[0]].keys())
+        for loci_allele_tuple in haplotype_count_map:
+            pop.vars()['pop_count'][loci_allele_tuple] += 1
+    return True
+
+def sum_traits_in_subpops(pop, param):
+    '''
+    count the # of subpops each trait is in -- return with #s for those that are 1, 2, <10%, <20%, <50%
+    This produces a dict at every generation with values for 1,2,<10%, <20%, <50%
+    :param pop: PyOperator provides. structure=False here (we want the full population), numpops
+    :return: True
+    '''
+    numSubPops=param
+    #print(list(pop.vars()['pop_count']))
+    #for key,val in list(pop.vars()['pop_count'].items()):
+    #    print (" key: %s val: %s" % (key,val))
+
+    vals=pop.vars()['pop_count'].values()
+    ones=twos=fivepercent=tenpercent=twentypercent=fiftypercent=0
+    for val in vals:
+        if val == 1:
+            ones += 1
+        if val == 2:
+            twos += 1
+        if val < (int(int(numSubPops) * .05)):
+            fivepercent +=1
+        if val < (int(int(numSubPops) * .10)):
+            tenpercent +=1
+        if val < (int(int(numSubPops) * .2)):
+            twentypercent +=1
+        if val < (int(int(numSubPops) * .5)):
+            fiftypercent +=1
+    pop.vars()['ones'].append(ones)
+    pop.vars()['twos'].append(twos)
+    pop.vars()['fivepercent'].append(fivepercent)
+    pop.vars()['tenpercent'].append(tenpercent)
+    pop.vars()['twentypercent'].append(twentypercent)
+    pop.vars()['fiftypercent'].append(fiftypercent)
+    return True
+
 def init_acumulators(pop, param):
     acumulators = param
     for acumulator in acumulators:
@@ -25,6 +115,12 @@ def init_acumulators(pop, param):
             pop.vars()['richness'] = []
             pop.vars()['class_freq']=[]
             pop.vars()['class_count']=[]
+            pop.vars()['ones']=[]
+            pop.vars()['twos']=[]
+            pop.vars()['fivepercent']=[]
+            pop.vars()['tenpercent']=[]
+            pop.vars()['twentypercent']=[]
+            pop.vars()['fiftypercent'] = []
             #pop.vars()['fst_mean']
     return True
 
@@ -37,8 +133,7 @@ def update_acumulator(pop, param):
             pop.vars()[acumulator][sp].append(deepcopy(pop.vars(sp)[var[:-3]]))
     else:
         pop.vars()[acumulator].append(deepcopy(pop.vars()[var]))
-        #pop.vars()['richness'].append(deepcopy(pop.vars()['haploFreq']))
-        #output[run_param].append(deepcopy(pop.vars()[var]))
+
     return True
 
 def update_richness_acumulator(pop, param):
@@ -60,6 +155,7 @@ def calculateAlleleAndGenotypeFrequencies(pop, param):
     #sim.stat(pop, alleleFreq = sim.ALL_AVAIL)
 
     keys = list(pop.dvars().haploFreq.keys())
+
     haplotype_map = pop.dvars().haploFreq[keys[0]]
     haplotype_count_map = pop.dvars().haploNum[keys[0]]
     num_classes = len(haplotype_map)
