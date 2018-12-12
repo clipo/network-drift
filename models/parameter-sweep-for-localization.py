@@ -15,7 +15,6 @@ import numpy as np
 import scipy.stats
 import argparse
 import uuid
-from matplotlib import colors as mcolors
 from time import time
 import sys
 import os
@@ -40,7 +39,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", help="provide name for experiment", required=True, type=str, default="test")
     parser.add_argument("--debug", help="turn on debugging output")
-    parser.add_argument("--reps", help="Replicated populations per parameter set", type=int, default=1)
+    parser.add_argument("--reps", help="Replicated populations per parameter set", type=int, default=3)
     parser.add_argument("--networkfile", help="Name of GML file representing the  network model for this simulation",
                         required=True, type=str)
     parser.add_argument("--numloci", help="Number of loci per individual (use with care)", type=int, required=True, default=1)
@@ -165,9 +164,9 @@ def main():
 
                         (ones_ave, ones_min, ones_max) = utils.mean_confidence_interval(ones_point_in_time,
                                                                                         confidence=0.95)
-                        (twos_ave, twos_min, twos_max) = utils.mean_confidence_interval(ones_point_in_time,
+                        (twos_ave, twos_min, twos_max) = utils.mean_confidence_interval(twos_point_in_time,
                                                                                         confidence=0.95)
-                        (richness_ave, richness_min, richness_max) = utils.mean_confidence_interval(ones_point_in_time,
+                        (richness_ave, richness_min, richness_max) = utils.mean_confidence_interval(richness_point_in_time,
                                                                                         confidence=0.95)
 
                         output_writer.writerow([iteration,k,subpop,mig,innov,ones_ave,ones_min,ones_max,
