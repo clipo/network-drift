@@ -148,7 +148,7 @@ class NetworkModel(object):
         for (node1, node2, data) in self.network.edges(data=True):
             self.network.add_edge(node1, node2, weight=self.migration_fraction)
         g_mat = nx.to_numpy_matrix(self.network)
-        print("normed_matrix: ", g_mat)
+        #print("normed_matrix: ", g_mat)
         return g_mat.tolist()
 
     def _calculate_migration_matrix(self):
