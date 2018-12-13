@@ -46,6 +46,27 @@ def classify(subpops,val):
         res.append('< 50%')
     return res
 
+def check_k_and_migration_rates(config):
+    '''
+    Check the combination of k and migration rates to see if any combination results in >1.0 total
+    :param config: the configuration object with the parameters from the command line
+    :return: output message (if a problem) or True (if no problem
+    '''
+    k_values = config.k_values
+    output_message = ""
+    count = 0
+    migs = config.migrationfraction
+    for k in k_values:
+        for mig in migs:
+            if float(k)*float(mig) >= 1.0:
+                output_message += "k=%s * mig=%4f is greater than 1.0\n" % (k,mig)
+                count+=1
+    if count>0:
+        return output_message
+    else:
+        return True
+
+
 def count_traits_in_subpops(pop, param):
     '''
     Count the number of subpops in which each trait occurs (1-numSubPops)

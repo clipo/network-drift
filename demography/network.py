@@ -83,6 +83,8 @@ class NetworkModel(object):
             #print(self._cached_migration_matrix)
             self.connectedness=self.sub_pops-1
         else:
+            ## used the fixed migration function for now - which determines each edge
+            ## note that k * migration rate must be < 1.0
             self._cached_migration_matrix = self._calculate_fixed_migration_matrix()
             #self._cached_migration_matrix = self._calculate_migration_matrix()
 
@@ -149,7 +151,7 @@ class NetworkModel(object):
         for (node1, node2, data) in self.network.edges(data=True):
             self.network.add_edge(node1, node2, weight=self.migration_fraction)
         g_mat = nx.to_numpy_matrix(self.network)
-        #print("normed_matrix: ", g_mat)
+        print("normed_matrix: ", g_mat)
         return g_mat.tolist()
 
     def _calculate_migration_matrix(self):
@@ -161,7 +163,7 @@ class NetworkModel(object):
         diag = np.eye(np.shape(g_mat)[0]) * (1.0 - self.migration_fraction)
         g_mat_scaled = diag + scaled
         log.debug("scaled migration matrix: %s", g_mat_scaled.tolist())
-        #print("g_mat_scaled: ", g_mat_scaled)
+        print("g_mat_scaled: ", g_mat_scaled)
         return g_mat_scaled.tolist()
 
     def _spatialMigrRates(self):

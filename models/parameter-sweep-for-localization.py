@@ -23,6 +23,14 @@ import csv
 
 global config, sim_id, script, cores
 
+'''
+paramter-sweep-for-localization.py 
+    --experiment paramsweep-5 --networkfile smallworld --numloci 1 --maxinittraits 100 
+    --popsize 5000 --migrationfraction .001 0.005 0.01 --innovrate 0.00 0.001 
+    --k_values 2 25 100 --rewiringprob 0.001 --sub_pops 200 
+    --maxalleles 10000 --simlength 2005 --reps 3
+'''
+
 output=defaultdict(dict)
 
 def setup(parser):
@@ -62,6 +70,13 @@ def main():
 
     # setup output directories for writing
     output_path = utils.setup_output(config.experiment)
+
+    # check the k and migration rate combinations
+    check = utils.check_k_and_migration_rates(config)
+    if check is not True:
+        print("\nProblem(s):\t %s\n" % check)
+        print("Please adjust input values for k and/or migration rate and restart.\n ")
+        sys.exit()
 
     # save parameters
     utils.save_parameters(str(sys.argv), config, output_path)
