@@ -181,7 +181,7 @@ def main():
                             ones_point_in_time.append(list_of_ones[2000])
                             twos_point_in_time.append(list_of_twos[2000])
                             richness_point_in_time.append(list_of_richness[2000])
-                            fst_point_in_time.append(fst_point_in_time[2000])
+                            fst_point_in_time.append(list_of_fst[2000])
 
                         (ones_ave, ones_min, ones_max) = utils.mean_confidence_interval(ones_point_in_time,
                                                                                         confidence=0.95)
