@@ -26,7 +26,7 @@ global config, sim_id, script, cores
 '''
 Example use of script. 
 parameter-sweep-for-localization.py 
-    --experiment paramsweep-5 --networkfile smallworld --numloci 1 --maxinittraits 100 
+    --experiment paramsweep5 --networkfile smallworld --numloci 1 --maxinittraits 100 
     --popsize 5000 --migrationfraction 0.0005 0.001 0.0025 0.005 
     --innovrate 0.00 0.001 0.005 0.01 
     --k_values 2 25 50 100 125 
@@ -177,6 +177,7 @@ def main():
                             list_of_ones = list(output[n].ones)
                             list_of_twos = list(output[n].twos)
                             list_of_richness = list(output[n].richness)
+                            list_of_fst = list(output[n].fst)
                             ones_point_in_time.append(list_of_ones[2000])
                             twos_point_in_time.append(list_of_twos[2000])
                             richness_point_in_time.append(list_of_richness[2000])
