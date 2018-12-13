@@ -75,7 +75,7 @@ def main():
         output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         output_writer.writerow(["Iteration", "k", "NumSubPops", "Migration", "InnovationRate", "Ones_Mean",
                                 "Ones_95%_Lower", "Ones_95%_Upper", "Twos_Mean", "Twos_95%_Lower", "Twos_Upper", "Richness_Mean",
-                                "Richness_95%_Lower", "Richness_Upper"])
+                                "Richness_95%_Lower", "Richness_Upper","Fst_Mean","Fst_95%_Lower","Fst_95%_Upper"])
         subpop_run_values = config.sub_pops
         k_run_values = config.k_values
 
@@ -153,6 +153,7 @@ def main():
                         ones_point_in_time = []
                         twos_point_in_time = []
                         richness_point_in_time = []
+                        fst_point_in_time = []
 
                         for n in range(config.reps):
                             list_of_ones = list(output[n].ones)
@@ -161,6 +162,7 @@ def main():
                             ones_point_in_time.append(list_of_ones[2000])
                             twos_point_in_time.append(list_of_twos[2000])
                             richness_point_in_time.append(list_of_richness[2000])
+                            fst_point_in_time.append(fst_point_in_time[2000])
 
                         (ones_ave, ones_min, ones_max) = utils.mean_confidence_interval(ones_point_in_time,
                                                                                         confidence=0.95)
@@ -168,9 +170,11 @@ def main():
                                                                                         confidence=0.95)
                         (richness_ave, richness_min, richness_max) = utils.mean_confidence_interval(richness_point_in_time,
                                                                                         confidence=0.95)
+                        (fst_ave, fst_min, fst_max) = utils.mean_confidence_interval(fst_point_in_time,
+                            confidence=0.95)
 
                         output_writer.writerow([iteration,k,subpop,mig,innov,ones_ave,ones_min,ones_max,
-                                                twos_ave,twos_min,twos_max,richness_ave,richness_min,richness_max])
+                                                twos_ave,twos_min,twos_max,richness_ave,richness_min,richness_max,fst_ave,fst_min,fst_max])
 
 if __name__ == "__main__":
     main()

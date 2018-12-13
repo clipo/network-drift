@@ -109,9 +109,10 @@ class NetworkModel(object):
             network = nx.read_gml(self.networkmodel)
             log.debug("network nodes: %s", '|'.join(sorted(list(network.nodes()))))
             self.network = network
-        self.print_graph()
-        #if self.save_figs == True:
-        self.save_graph()
+
+        if self.save_figs == True:
+            self.print_graph()
+            self.save_graph()
 
     def _calculate_initial_population_configuration(self):
         # num subpops is just the number of vertices in the first graph slice.
