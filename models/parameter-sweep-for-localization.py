@@ -25,7 +25,7 @@ global config, sim_id, script, cores
 
 '''
 Example use of script. 
-paramter-sweep-for-localization.py 
+parameter-sweep-for-localization.py 
     --experiment paramsweep-5 --networkfile smallworld --numloci 1 --maxinittraits 100 
     --popsize 5000 --migrationfraction 0.0005 0.001 0.0025 0.005 
     --innovrate 0.00 0.001 0.005 0.01 
