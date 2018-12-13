@@ -24,11 +24,13 @@ import csv
 global config, sim_id, script, cores
 
 '''
+Example use of script. 
 paramter-sweep-for-localization.py 
     --experiment paramsweep-5 --networkfile smallworld --numloci 1 --maxinittraits 100 
-    --popsize 5000 --migrationfraction .001 0.005 0.01 --innovrate 0.00 0.001 
-    --k_values 2 25 100 --rewiringprob 0.001 --sub_pops 200 
-    --maxalleles 10000 --simlength 2005 --reps 3
+    --popsize 5000 --migrationfraction 0.0005 0.001 0.0025 0.005 
+    --innovrate 0.00 0.001 0.005 0.01 
+    --k_values 2 25 50 100 125 
+    --rewiringprob 0.001 --sub_pops 200 --maxalleles 10000 --simlength 2005 --reps 5
 '''
 
 output=defaultdict(dict)
@@ -91,6 +93,7 @@ def main():
         output_writer.writerow(["Iteration", "k", "NumSubPops", "Migration", "InnovationRate", "Ones_Mean",
                                 "Ones_95%_Lower", "Ones_95%_Upper", "Twos_Mean", "Twos_95%_Lower", "Twos_Upper", "Richness_Mean",
                                 "Richness_95%_Lower", "Richness_Upper","Fst_Mean","Fst_95%_Lower","Fst_95%_Upper"])
+        output_file.flush()
         subpop_run_values = config.sub_pops
         k_run_values = config.k_values
 
@@ -190,7 +193,7 @@ def main():
 
                         output_writer.writerow([iteration,k,subpop,mig,innov,ones_ave,ones_min,ones_max,
                                                 twos_ave,twos_min,twos_max,richness_ave,richness_min,richness_max,fst_ave,fst_min,fst_max])
-
+                        output_file.flush()
 if __name__ == "__main__":
     main()
 
