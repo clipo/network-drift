@@ -96,14 +96,18 @@ def main():
         output_file.flush()
         subpop_run_values = config.sub_pops
         k_run_values = config.k_values
-
         mig_run_values = config.migrationfraction
         innov_run_values = config.innovrate
 
         iteration=-1
+
         for subpop in subpop_run_values:
-            if len(k_run_values)==0:
-                k_run_values = [2,int(subpop*.1),int(subpop*.2),int(subpop*.5),int(subpop*.8),int(subpop*.9),subpop-1]
+            if k_run_values == [0]:
+                k_run_values = [2, int(float(subpop) * .1), int(float(subpop) * .2),
+                            int(float(subpop) * .5), int(float(subpop) * .8),
+                            int(float(subpop) * .9),
+                            int(subpop) - 1]
+
             for k in k_run_values:
                 for mig in mig_run_values:
                     for innov in innov_run_values:
@@ -120,15 +124,15 @@ def main():
                         # to the mating function which applies it during the copying process
                         #networkmodel = NetworkModel( networkmodel="/Users/clipo/Documents/PycharmProjects/RapaNuiSim/notebooks/test_graph.gml",
                         networkmodel = network.NetworkModel( networkmodel="smallworld",
-                                                             simulation_id=config.experiment,
-                                                             sim_length=config.simlength,
-                                                             burn_in_time=config.burnintime,
-                                                             initial_subpop_size=config.popsize,
-                                                             migrationfraction=mig,
-                                                             sub_pops=subpop,
-                                                             connectedness=k, # if 0, then distance decay
-                                                             save_figs=config.save_figs,
-                                                             network_iteration=iteration)
+                                                         simulation_id=config.experiment,
+                                                         sim_length=config.simlength,
+                                                         burn_in_time=config.burnintime,
+                                                         initial_subpop_size=config.popsize,
+                                                         migrationfraction=mig,
+                                                         sub_pops=subpop,
+                                                         connectedness=k, # if 0, then distance decay
+                                                         save_figs=config.save_figs,
+                                                         network_iteration=iteration)
 
                         num_pops = networkmodel.get_subpopulation_number()
                         sub_pop_size = int(config.popsize / num_pops)
@@ -136,10 +140,10 @@ def main():
                         # The regional network model defines both of these, in order to configure an initial population for evolution
                         # Construct the initial population
                         pops = sp.Population(size = [sub_pop_size]*num_pops,
-                                             subPopNames = str(list(networkmodel.get_subpopulation_names())),
-                                             infoFields = 'migrate_to',
-                                             ploidy=1,
-                                             loci=config.numloci )
+                                         subPopNames = str(list(networkmodel.get_subpopulation_names())),
+                                         infoFields = 'migrate_to',
+                                         ploidy=1,
+                                         loci=config.numloci )
 
                         ### now set up the activities
                         init_ops['acumulators'] = sp.PyOperator(utils.init_acumulators, param=['fst','alleleFreq', 'haploFreq'])
@@ -161,7 +165,7 @@ def main():
                         ## go simuPop go! evolve your way to the future!
                         sim = sp.Simulator(pops, rep=config.reps)
                         sim.evolve(initOps=list(init_ops.values()), preOps=list(pre_ops.values()), postOps=list(post_ops.values()),
-                                   matingScheme=mating_scheme, gen=config.simlength)
+                               matingScheme=mating_scheme, gen=config.simlength)
 
                         count=0
                         for pop in sim.populations():
@@ -184,17 +188,18 @@ def main():
                             fst_point_in_time.append(list_of_fst[2000])
 
                         (ones_ave, ones_min, ones_max) = utils.mean_confidence_interval(ones_point_in_time,
-                                                                                        confidence=0.95)
+                                                                                    confidence=0.95)
                         (twos_ave, twos_min, twos_max) = utils.mean_confidence_interval(twos_point_in_time,
-                                                                                        confidence=0.95)
+                                                                                    confidence=0.95)
                         (richness_ave, richness_min, richness_max) = utils.mean_confidence_interval(richness_point_in_time,
-                                                                                        confidence=0.95)
+                                                                                                confidence=0.95)
                         (fst_ave, fst_min, fst_max) = utils.mean_confidence_interval(fst_point_in_time,
-                            confidence=0.95)
+                                                                                 confidence=0.95)
 
                         output_writer.writerow([iteration,k,subpop,mig,innov,ones_ave,ones_min,ones_max,
-                                                twos_ave,twos_min,twos_max,richness_ave,richness_min,richness_max,fst_ave,fst_min,fst_max])
+                                            twos_ave,twos_min,twos_max,richness_ave,richness_min,richness_max,fst_ave,fst_min,fst_max])
                         output_file.flush()
+
 if __name__ == "__main__":
     main()
 

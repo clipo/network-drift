@@ -6,6 +6,7 @@ from simuPOP import demography
 import logging as log
 import numpy as np
 import scipy.stats
+import sys
 import math
 from simuPOP import demography
 import demography.network as network
@@ -223,7 +224,8 @@ def setup_output(experiment="test"):
     try:
         os.mkdir(path)
     except OSError:
-        print("Creation of the directory %s failed - it might already exist? " % path)
+        print("Creation of the directory %s failed - it might already exist? Quitting... " % path)
+        sys.exit()
     else:
         print("Successfully created the directory %s " % path)
     return path
