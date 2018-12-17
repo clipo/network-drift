@@ -41,18 +41,18 @@ __version__ = '%s'
 
     def modified_callable(self):
         if not os.path.isdir(".git"):
-            print ("This does not appear to be a Git repository.")
+            print("This does not appear to be a Git repository.")
             return
         try:
             p = subprocess.Popen(["git", "describe",
                                   "--tags", "--always"],
                                  stdout=subprocess.PIPE)
         except EnvironmentError:
-            print ("unable to run git, leaving network-drift/_version.py alone")
+            print("unable to run git, leaving network-drift/_version.py alone")
             return
         stdout = p.communicate()[0]
         if p.returncode != 0:
-            print ("unable to run git, leaving network-drift/_version.py alone")
+            print("unable to run git, leaving network-drift/_version.py alone")
             return
         # our tags are like:  v2.2
         ver = stdout[len("v"):].strip()
@@ -113,18 +113,18 @@ class VersionUpdate(Command):
 __version__ = '%s'
 """
         if not os.path.isdir(".git"):
-            print "This does not appear to be a Git repository."
+            print("This does not appear to be a Git repository.")
             return
         try:
             p = subprocess.Popen(["git", "describe",
                                   "--tags", "--always"],
                                  stdout=subprocess.PIPE)
         except EnvironmentError:
-            print "unable to run git, leaving network-drift/_version.py alone"
+            print("unable to run git, leaving network-drift/_version.py alone")
             return
         stdout = p.communicate()[0]
         if p.returncode != 0:
-            print "unable to run git, leaving network-drift/_version.py alone"
+            print("unable to run git, leaving network-drift/_version.py alone")
             return
         # our tags are like:  v2.2
         ver = stdout[len("v"):].strip()
