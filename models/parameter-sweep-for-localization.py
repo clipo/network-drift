@@ -1,8 +1,10 @@
 from __future__ import division
 from collections import defaultdict, OrderedDict
 from copy import deepcopy
+import psutil
 import simuOpt
 simuOpt.setOptions(alleleType='long', optimized=True, quiet=False)
+simuOpt.setOptions(numThreads=psutil.cpu_count())
 import math
 import seaborn as sns
 sns.set_style('white')
