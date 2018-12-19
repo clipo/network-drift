@@ -75,6 +75,13 @@ def main():
 
     config = parser.parse_args()
 
+    # check the k and migration rate combinations
+    check = utils.check_k_and_migration_rates(config)
+    if check is not True:
+        print("\nProblem(s):\t %s\n" % check)
+        print("Please adjust input values for k and/or migration rate and restart.\n ")
+        sys.exit()
+
     # setup output directories for writing
     output_path = utils.setup_output(config.experiment)
 
