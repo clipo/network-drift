@@ -13,7 +13,7 @@ global config
 '''
 Example use of script. 
 python3 ./shapefile_to_gml.py 
-    --shapefile /Users/clipo/Google\ Drive\ File\ Stream/Team\ Drives/Rapa\ Nui/SAA\ 2019/Simulation/data/ahu.shp
+    --shapefile ../data/rapa_nui/ahu.shp
     --migrationfraction 0.0001
     --connectedness 5
     --output ahu

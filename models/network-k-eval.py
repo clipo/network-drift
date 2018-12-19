@@ -104,7 +104,8 @@ def main():
                                              sub_pops=int(config.sub_pops),
                                              connectedness=param_value, # if 0, then distance decay
                                              save_figs=config.save_figs,
-                                             network_iteration=iteration_number)
+                                             network_iteration=iteration_number,
+                                             output_path=output_path)
 
         num_pops = networkmodel.get_subpopulation_number()
         sub_pop_size = int(config.popsize / num_pops)

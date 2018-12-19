@@ -52,7 +52,8 @@ class NetworkModel(object):
                  rewiring_prob=0.0,
                  save_figs=True,
                  network_iteration=1,
-                 xy=None):
+                 xy=None,
+                 output_path="test"):
         """
         :param networkmodel: Name of GML file
         :param sim_length: Number of generations to run the simulation
@@ -76,6 +77,7 @@ class NetworkModel(object):
         self.save_figs=save_figs
         self.network_iteration=network_iteration
         self.xy=[]
+        self.output_path = output_path
 
         # Parse the GML files and create a list of NetworkX objects
         self._parse_network_model()
@@ -88,6 +90,8 @@ class NetworkModel(object):
             self._cached_migration_matrix=self._spatialMigrRates()
             #print(self._cached_migration_matrix)
             self.connectedness=self.sub_pops-1
+        elif ".gml" in self.networkmodel:
+            self._cached_migration_matrix=self._calculate_migration_matrix_from_gml()
         else:
             ## used the fixed migration function for now - which determines each edge
             ## note that k * migration rate must be < 1.0
@@ -158,6 +162,10 @@ class NetworkModel(object):
             self.network.add_edge(node1, node2, weight=self.migration_fraction)
         g_mat = nx.to_numpy_matrix(self.network)
         #print("normed_matrix: ", g_mat)
+        return g_mat.tolist()
+
+    def _calculate_migration_matrix_from_gml(self):
+        g_mat = nx.to_numpy_matrix(self.network).astype(np.float)
         return g_mat.tolist()
 
     def _calculate_migration_matrix(self):
@@ -245,7 +253,7 @@ class NetworkModel(object):
         Save the graph of the network.
         :return: nothing - should be saved file
         """
-        name = "k-%s.png" % self.connectedness
+        name = "%s/k-%s.png" % (self.output_path,self.connectedness)
         nx.draw(self.network,self.pos,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
         plt.savefig(name)
 
