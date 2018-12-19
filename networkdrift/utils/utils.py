@@ -2,14 +2,12 @@ from __future__ import division
 from collections import defaultdict, OrderedDict
 from copy import deepcopy
 import simuPOP as sp
-from simuPOP import demography
 import logging as log
 import numpy as np
 import scipy.stats
 import sys
 import math
 from simuPOP import demography
-import demography.network as network
 import os
 from collections import Counter
 

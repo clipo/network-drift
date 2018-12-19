@@ -7,8 +7,8 @@ import math
 import seaborn as sns
 sns.set_style('white')
 import matplotlib.pyplot as plt
-import demography.network as network
-from utils import utils
+import networkdrift.demography.network as network
+from networkdrift.utils import utils
 import simuPOP as sp
 import logging as log
 import numpy as np
