@@ -174,37 +174,6 @@ def main():
             ax.set_xlabel('Generation')
             plt.show()
 
-            # copy output to the output list. interestingly there is a problem if this doesnt happen.
-            #output[param_value] = deepcopy(pop.dvars())
-
-            #print("length:  %s " % len(pop.genotype()))
-            #for n in range(0, len(pop.genotype())):
-            #    sum += pop.genotype().count(n)
-            #    print("loci %s num %s" % ( n, pop.genotype().count(n)))
-
-            #print ("sum: ", sum)
-            # # now make a figure of the Fst results
-            # fig = plt.figure(figsize=(16, 9))
-            # ax = fig.add_subplot(111)
-            # for pop, mig in zip(sim.populations(), migs):
-            #     ax.plot(pop.dvars().fst, label='Migration rate %.4f' % mig)
-            # ax.legend(loc=2)
-            # ax.set_ylabel('FST')
-            # ax.set_xlabel('Generation')
-            # plt.show()
-            #
-            # # # now make a figure of richness.
-            # fig2 = plt.figure(figsize=(16, 9))
-            # ax = fig2.add_subplot(111)
-            # for pop, mig in zip(sim.populations(), migs):
-            #     ax.plot(pop.dvars().richness, label='Migration rate %.4f' % mig)
-            # ax.legend(loc=2)
-            # ax.set_ylabel('Richness')
-            # ax.set_xlabel('Generation')
-            # plt.show()
-
-            # #print(output)
-
     sum_fig = plt.figure(figsize=(16,9))
     ax=sum_fig.add_subplot(111)
     iteration=-1
@@ -308,28 +277,6 @@ def main():
     plt.show()
     savefilename = output_path + "/richness-ci.png"
     richness_sum_fig.savefig(savefilename, bbox_inches='tight')
-
-    #print("k = %s: %s" % (k, utils.mean_confidence_interval(output[k].fst[startmeasure:stopmeasure], confidence=0.95)))
-
-    # # now make a figure of the haplotypeFreq results...
-    # fig3 = plt.figure(figsize=(16, 9))
-    # ax = fig3.add_subplot(111)
-    # for pop, mig in zip(sim.populations(), migs):
-    #     ax.plot(pop.dvars().alleleNum, label='Migration rate %.4f' % mig)
-    # ax.legend(loc=2)
-    # ax.set_ylabel('Allele Numbers')
-    # ax.set_xlabel('Generation')
-    # plt.show()
-    # #
-    # # now make a figure of the haplotypeFreq results...
-    # fig4 = plt.figure(figsize=(16, 9))
-    # ax = fig4.add_subplot(111)
-    # for pop, mig in zip(sim.populations(), migs):
-    #     ax.plot(pop.dvars().class_richness, label='Migration %.4f' % mig)
-    # ax.legend(loc=2)
-    # ax.set_ylabel(' Class Richness')
-    # ax.set_xlabel('Generation')
-    # plt.show()
 
 if __name__ == "__main__":
     main()
