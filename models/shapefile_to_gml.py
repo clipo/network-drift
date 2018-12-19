@@ -13,13 +13,12 @@ global config
 '''
 Example use of script. 
 python3 ./shapefile_to_gml.py 
-    --shapefile /Users/clipo/Google Drive File Stream/Team Drives/Rapa Nui/SAA 2019/Simulation/data/ahu.shp
+    --shapefile /Users/clipo/Google\ Drive\ File\ Stream/Team\ Drives/Rapa\ Nui/SAA\ 2019/Simulation/data/ahu.shp
     --migrationfraction 0.0001
     --connectedness 5
     --output ahu
 
 '''
-
 
 def print_graph(network,pos):
     """
@@ -45,19 +44,19 @@ def save_graph_plot(network,pos,outputname):
     plt.savefig(name)
     return True
 
-def save_gml(network,pos,outputname):
+def save_gml(network,outputname):
     """
     Save the GML file
     :return: nothing - should be saved file
     """
-    name = "%s.png" % outputname
+    name = "%s.gml" % outputname
     nx.write_gml(network, name)
     return True
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", help="turn on debugging output")
-    parser.add_argument("--shapefile", help="name of shapefile to import", type=int, default=3)
+    parser.add_argument("--shapefile", help="name of shapefile to import", required=True)
     parser.add_argument("--migrationfraction", help="base migration fraction", type=float, required=True, default=0.001)
     parser.add_argument("--connectedness", help="k value used to connect nodes in network", type=int, required=True, default=5)
     parser.add_argument("--output", help="name of output gml", required=True)
@@ -129,6 +128,9 @@ def main():
                 new_network.add_edge(num, ne, weight=dist/mean_nearest_neighbor_distance*migration_fraction)
             #print("adding edge from %s to %s" % (num, ne))
 
-    print_graph(network, pos)
-    save_graph_plot(network,pos,output)
-    save_gml(network,output)
+    print_graph(new_network, pos)
+    save_graph_plot(new_network,pos,output)
+    save_gml(new_network,output)
+
+if __name__ == "__main__":
+    main()
