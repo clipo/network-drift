@@ -24,6 +24,7 @@ from collections import defaultdict
 from itertools import permutations
 import operator
 import math
+import statistics
 
 class NetworkModel(object):
     """
@@ -88,10 +89,11 @@ class NetworkModel(object):
         # prime the migration matrix
         if self.connectedness==self.sub_pops:
             self._cached_migration_matrix=self._spatialMigrRates()
-            #print(self._cached_migration_matrix)
+            log.debug(self._cached_migration_matrix)
             self.connectedness=self.sub_pops-1
         elif ".gml" in self.networkmodel:
             self._cached_migration_matrix=self._calculate_migration_matrix_from_gml()
+            log.debug(self._cached_migration_matrix)
         else:
             ## used the fixed migration function for now - which determines each edge
             ## note that k * migration rate must be < 1.0
@@ -120,7 +122,10 @@ class NetworkModel(object):
             log.debug("Opening  GML file %s:", self.networkmodel)
             network = nx.read_gml(self.networkmodel)
             log.debug("network nodes: %s", '|'.join(sorted(list(network.nodes()))))
-            self.network = network
+            self.network = self._create_network_edges_from_k_value(network)
+        else:
+            print("There's been a problem - we haven't created the network. Bailing out!\n")
+            sys.exit()
 
         if self.save_figs == True:
             self.print_graph()
@@ -194,7 +199,7 @@ class NetworkModel(object):
         '''
         r=self.migration_fraction
         xy=list(self.xy)
-        print(xy)
+        #print(xy)
         nSubPop = self.sub_pops
         rate = []
         for i in range(nSubPop):
@@ -215,6 +220,61 @@ class NetworkModel(object):
             if x ** 2 + y ** 2 <= radius ** 2:
                 yield from set(((x, y), (x, -y), (-x, y), (-x, -y),))
 
+    def _create_network_edges_from_k_value(self,network):
+        new_network=nx.Graph()
+        nearest_neighbor_distance = []
+        number = 0
+        node_pos = {}
+        node_name = {}
+        ## first build a list of locations and names for the new nodes
+        for (num, data) in network.nodes(data=True):
+            node_pos[num] = data['pos']
+            node_name[num] = data['name']
+
+        for num, xy in list(node_pos.items()):
+            new_network.add_node(num, x=xy[0], y=xy[1], pos=(xy[0], xy[1]), name=node_name[num])
+
+        self.pos = nx.get_node_attributes(new_network, 'pos')
+
+        for num, xy in list(node_pos.items()):
+            x1, y1 = xy
+            # print("working on node %s" % num)
+            node_distances = []
+            sorted_node_distances = []
+            # now iterate through to find the n closes networks
+            ccount = 0
+            for (num2, xy2) in list(node_pos.items()):
+                x2, y2 = xy2
+                if num != num2:
+                    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+                    node_distances.append(distance)
+
+            sorted_node_distances.append(min(node_distances))
+            smallest_distance = min(sorted_node_distances)
+            nearest_neighbor_distance.append(smallest_distance)
+
+        mean_nearest_neighbor_distance = statistics.mean(nearest_neighbor_distance)
+
+        # now add the connections based on the degree of k specified
+        for num,(x,y) in list(node_pos.items()):
+            # print("working on node %s" % num)
+            node_distances = {}
+            # now iterate through to find the n closes networks
+            ccount = 0
+            for (num2, (x2,y2)) in list(node_pos.items()):
+                if num != num2:
+                    node_distances[num2] = (math.sqrt((x - x2) ** 2 + (y - y2) ** 2))
+            sorted_node_distances = sorted(node_distances.items(), key=operator.itemgetter(1))
+            list_of_edges_to_add = list(range(0, self.connectedness-1))
+            current_k = self.connectedness
+            # note: we dont want to add edges if they are already there
+            for e in list_of_edges_to_add:
+                ne, dist = sorted_node_distances[e]
+                # network.add_edge(node_locations[num],node_locations[ne], weight=dist )
+                weight=(dist / mean_nearest_neighbor_distance) * self.migration_fraction
+                new_network.add_edge(num, ne, weight=weight)
+
+        return new_network
 
     ###################### Public API #####################
 

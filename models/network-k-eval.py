@@ -95,7 +95,7 @@ def main():
         # of changing subpopulations and interaction strengths.  This object is Callable, and simply is handed
         # to the mating function which applies it during the copying process
         #networkmodel = NetworkModel( networkmodel="/Users/clipo/Documents/PycharmProjects/RapaNuiSim/notebooks/test_graph.gml",
-        networkmodel = network.NetworkModel( networkmodel="smallworld",
+        networkmodel = network.NetworkModel( networkmodel=config.networkfile,
                                              simulation_id=config.experiment,
                                              sim_length=config.simlength,
                                              burn_in_time=config.burnintime,
