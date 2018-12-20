@@ -265,7 +265,7 @@ class NetworkModel(object):
                 if num != num2:
                     node_distances[num2] = (math.sqrt((x - x2) ** 2 + (y - y2) ** 2))
             sorted_node_distances = sorted(node_distances.items(), key=operator.itemgetter(1))
-            list_of_edges_to_add = list(range(0, self.connectedness-1))
+            list_of_edges_to_add = list(range(0, self.connectedness))
             current_k = self.connectedness
             # note: we dont want to add edges if they are already there
             for e in list_of_edges_to_add:

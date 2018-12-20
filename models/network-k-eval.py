@@ -76,9 +76,13 @@ def main():
 
     run_param=config.k_values
 
+
     ## initialize the output dictionary
     for k in run_param:
         output[k]={}
+        if k >= config.sub_pops:
+            print("k values cannot be greater than the number of sub pops.\n")
+            sys.exit()
 
     # set up the frequencies for the alleles in each loci. Here assuming a uniform distribution as a starting point
     distribution = utils.constructUniformAllelicDistribution(config.maxinittraits)
@@ -108,6 +112,9 @@ def main():
                                              output_path=output_path)
 
         num_pops = networkmodel.get_subpopulation_number()
+        if param_value >= num_pops:
+            print("k values cannot be greater or equal to the number of sub pops.\n")
+            sys.exit()
         sub_pop_size = int(config.popsize / num_pops)
 
         # The regional network model defines both of these, in order to configure an initial population for evolution
