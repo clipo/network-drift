@@ -241,7 +241,7 @@ class NetworkModel(object):
             # print("working on node %s" % num)
             node_distances = []
             sorted_node_distances = []
-            # now iterate through to find the n closes networks
+            # now iterate through to find the n closest networks
             ccount = 0
             for (num2, xy2) in list(node_pos.items()):
                 x2, y2 = xy2
@@ -313,7 +313,7 @@ class NetworkModel(object):
         Save the graph of the network.
         :return: nothing - should be saved file
         """
-        name = "%s/k-%s.png" % (self.output_path,self.connectedness)
+        name = "%s/k-%s.svg" % (self.output_path,self.connectedness)
         nx.draw(self.network,self.pos,node_color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[self.network_iteration], with_labels=True, font_weight='bold')
         plt.savefig(name)
 
