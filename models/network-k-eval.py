@@ -186,7 +186,7 @@ def main():
     ax.set_ylabel('Numbers of Traits')
     ax.set_xlabel('Generations')
     plt.show()
-    savefilename = output_path + "/subpop_fig.png"
+    savefilename = output_path + "/subpop_fig.svg"
     subpop_fig.savefig(savefilename, bbox_inches='tight')
 
     sum_fig = plt.figure(figsize=(16,9))
@@ -205,7 +205,7 @@ def main():
     ax.set_ylabel('Fst')
     ax.set_xlabel('Generations')
     plt.show()
-    savefilename= output_path + "/sum_fig.png"
+    savefilename= output_path + "/sum_fig.svg"
     sum_fig.savefig(savefilename, bbox_inches='tight')
 
     rich_fig = plt.figure(figsize=(16,9))
@@ -225,7 +225,7 @@ def main():
     ax.set_ylabel('Richness')
     ax.set_xlabel('Generations')
     plt.show()
-    savefilename = output_path + "/richness.png"
+    savefilename = output_path + "/richness.svg"
     rich_fig.savefig(savefilename, bbox_inches='tight')
 
     ## output CI for the parameters
@@ -256,7 +256,7 @@ def main():
         ax.set_ylabel('Fst')
         ax.set_xlabel('Generation')
     plt.show()
-    savefilename = output_path + "/summary-ci.png"
+    savefilename = output_path + "/summary-ci.svg"
     summary_fig.savefig(savefilename, bbox_inches='tight')
 
     ## now the richness graph
@@ -286,7 +286,7 @@ def main():
         ax.set_ylabel('Richness')
         ax.set_xlabel('Generation')
     plt.show()
-    savefilename = output_path + "/richness-ci.png"
+    savefilename = output_path + "/richness-ci.svg"
     richness_sum_fig.savefig(savefilename, bbox_inches='tight')
 
 if __name__ == "__main__":
