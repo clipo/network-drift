@@ -29,16 +29,16 @@ def print_graph(network,pos, nodecolor):
     plt.subplot(111)
     nx.draw(network, pos,
             node_color=nodecolor,
-            with_labels=True, font_weight='bold')
+            with_labels=False, font_weight='bold')
     plt.show()
     return True
 
-def save_graph_plot(network,pos,outputname,nodecolor):
+def save_graph_plot(network,pos,outputname,connectedness,nodecolor):
     """
     Save the graph of the network.
     :return: nothing - should be saved file
     """
-    name = "%s.svg" % outputname
+    name = "%s-%s.svg" % (outputname, connectedness)
     nx.draw(network, pos,
             node_color=nodecolor,
             with_labels=True, font_weight='bold')
@@ -122,17 +122,13 @@ def main():
         list_of_edges_to_add=list(range(0,k))
         current_k=k
         for e in list_of_edges_to_add:
-            ne, dist = sorted_node_distances[e]
-            if new_network.has_edge(num,ne):
-                current_k += 1
-                list_of_edges_to_add.append(current_k)
-            else:
-                #network.add_edge(node_locations[num],node_locations[ne], weight=dist )
-                new_network.add_edge(num, ne, weight=dist/mean_nearest_neighbor_distance*migration_fraction)
-            #print("adding edge from %s to %s" % (num, ne))
+                ne, dist = sorted_node_distances[e]
+                # network.add_edge(node_locations[num],node_locations[ne], weight=dist )
+                weight = (dist / mean_nearest_neighbor_distance) * migration_fraction
+                new_network.add_edge(num, ne, weight=weight)
 
     print_graph(new_network, pos,nodecolor)
-    save_graph_plot(new_network,pos,output,nodecolor)
+    save_graph_plot(new_network,pos,output,k,nodecolor)
     save_gml(new_network,output,nodecolor)
 
 if __name__ == "__main__":
