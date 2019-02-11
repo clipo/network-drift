@@ -16,35 +16,36 @@ python3 ./shapefile_to_gml.py
     --shapefile ../data/rapa_nui/ahu.shp
     --migrationfraction 0.0001
     --connectedness 5
+    --nodecolor blue
     --output ahu
 
 '''
 
-def print_graph(network,pos):
+def print_graph(network,pos, nodecolor):
     """
     Show us the graph of the network.
     :return: nothing - should be a matplotlib plot
     """
     plt.subplot(111)
     nx.draw(network, pos,
-            node_color="red",
+            node_color=nodecolor,
             with_labels=True, font_weight='bold')
     plt.show()
     return True
 
-def save_graph_plot(network,pos,outputname):
+def save_graph_plot(network,pos,outputname,nodecolor):
     """
     Save the graph of the network.
     :return: nothing - should be saved file
     """
-    name = "%s.png" % outputname
+    name = "%s.svg" % outputname
     nx.draw(network, pos,
-            node_color="red",
+            node_color=nodecolor,
             with_labels=True, font_weight='bold')
     plt.savefig(name)
     return True
 
-def save_gml(network,outputname):
+def save_gml(network,outputname,nodecolor):
     """
     Save the GML file
     :return: nothing - should be saved file
@@ -60,6 +61,7 @@ def main():
     parser.add_argument("--migrationfraction", help="base migration fraction", type=float, required=True, default=0.001)
     parser.add_argument("--connectedness", help="k value used to connect nodes in network", type=int, required=True, default=5)
     parser.add_argument("--output", help="name of output gml", required=True)
+    parser.add_argument("--nodecolor", help="color of nodes", required=True, default="blue")
 
     config = parser.parse_args()
 
@@ -67,6 +69,7 @@ def main():
     migration_fraction =config.migrationfraction
     networkfile = config.shapefile
     output = config.output
+    nodecolor=config.nodecolor
 
     k=config.connectedness
 
@@ -128,9 +131,9 @@ def main():
                 new_network.add_edge(num, ne, weight=dist/mean_nearest_neighbor_distance*migration_fraction)
             #print("adding edge from %s to %s" % (num, ne))
 
-    print_graph(new_network, pos)
-    save_graph_plot(new_network,pos,output)
-    save_gml(new_network,output)
+    print_graph(new_network, pos,nodecolor)
+    save_graph_plot(new_network,pos,output,nodecolor)
+    save_gml(new_network,output,nodecolor)
 
 if __name__ == "__main__":
     main()
