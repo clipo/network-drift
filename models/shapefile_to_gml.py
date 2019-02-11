@@ -41,7 +41,7 @@ def save_graph_plot(network,pos,outputname,connectedness,nodecolor):
     name = "%s-%s.svg" % (outputname, connectedness)
     nx.draw(network, pos,
             node_color=nodecolor,
-            with_labels=True, font_weight='bold')
+            with_labels=False, font_weight='bold')
     plt.savefig(name)
     return True
 
