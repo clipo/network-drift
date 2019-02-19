@@ -29,6 +29,8 @@ def print_graph(network,pos, nodecolor):
     plt.subplot(111)
     nx.draw(network, pos,
             node_color=nodecolor,
+            node_size=30,
+            width=0.1,
             with_labels=False, font_weight='bold')
     plt.show()
     return True
@@ -41,6 +43,8 @@ def save_graph_plot(network,pos,outputname,connectedness,nodecolor):
     name = "%s-%s.svg" % (outputname, connectedness)
     nx.draw(network, pos,
             node_color=nodecolor,
+            node_size=30,
+            width=0.1,
             with_labels=False, font_weight='bold')
     plt.savefig(name)
     return True

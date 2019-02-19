@@ -208,25 +208,27 @@ def mean_confidence_interval(data, confidence=0.95):
     return m, m-h, m+h
 
 def setup_output(experiment="test"):
-    # create output directories
+    # first create output directories-- should exist already but if not....
     path = os.getcwd()
     path = path + "/output/"
     try:
         os.mkdir(path)
     except OSError:
-        print("Creation of the directory %s failed - it might already exist? " % path)
+        print("Creation of the general output directory %s failed. But it might exist. That's okay - carry on. " % path)
     else:
-        print("Successfully created the directory %s " % path)
+        print("Successfully created the general output directory %s " % path)
     path = path + experiment
 
+    ## now add the specific project path... This should exist (if it does we are writing over old stuff)
     try:
         os.mkdir(path)
     except OSError:
-        print("Creation of the directory %s failed - it might already exist? Quitting... " % path)
+        print("Creation of the project output directory %s failed - it might already exist? Quitting... " % path)
         sys.exit()
     else:
-        print("Successfully created the directory %s " % path)
+        print("Successfully created the project output directory %s " % path)
     return path
+
 
 def save_parameters(args, config, output_path):
     '''
