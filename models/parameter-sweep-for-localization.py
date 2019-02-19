@@ -33,6 +33,15 @@ parameter-sweep-for-localization.py
     --innovrate 0.00 0.001 0.005 0.01 
     --k_values 2 25 50 100 125 
     --rewiringprob 0.001 --sub_pops 200 --maxalleles 10000 --simlength 2005 --reps 5
+    
+example using gml file
+parameter-sweep-for-localization.py
+--experiment rn-sweep 
+--networkfile /Users/clipo/Documents/PycharmProjects/network-drift/data/rapa_nui/ahu.gml
+ --numloci 1 --innovrate 0.00 --maxinittraits 100 
+ --popsize 5000 --migrationfraction 0.000001 0.000005 0.00001 0.00005 
+ --k_values 5 10 25 50 75 100 125 --rewiringprob 0.0 
+ --sub_pops 150 --maxalleles 10000 --simlength 2005 --reps 5
 '''
 
 output=defaultdict(dict)
