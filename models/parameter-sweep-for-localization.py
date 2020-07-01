@@ -104,8 +104,8 @@ def main():
     with open(output_data_file_name, mode='w') as output_file:
         output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         output_writer.writerow(["Iteration", "k", "NumSubPops", "Migration", "InnovationRate", "Ones_Mean",
-                                "Ones_95%_Lower", "Ones_95%_Upper", "Twos_Mean", "Twos_95%_Lower", "Twos_95%_Upper", "Richness_Mean",
-                                "Richness_95%_Lower", "Richness_95%_Upper","Fst_Mean","Fst_95%_Lower","Fst_95%_Upper"])
+                                "Ones_Lower", "Ones_Upper", "Twos_Mean", "Twos_Lower", "Twos_Upper", "Richness_Mean",
+                                "Richness_Lower", "Richness_Upper","Fst_Mean","Fst_Lower","Fst_Upper"])
         output_file.flush()
         subpop_run_values = config.sub_pops
         k_run_values = config.k_values
