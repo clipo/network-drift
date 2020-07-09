@@ -67,7 +67,7 @@ def main():
     parser.add_argument("--maxinittraits", help="Max initial number of traits per locus for initialization", type=int,
                         required=True, default=50)
     parser.add_argument("--innovrate", nargs='+', help="Rate(s) at which innovations occur in population as a per-locus rate", type=float, default=[])
-    parser.add_argument("--simlength", help="Time at which simulation and sampling end, defaults to 3000 generations",
+    parser.add_argument("--simlength", help="Time at which simulation and sampling end, defaults to 20 generations",
                         type=int, default="20")
     parser.add_argument("--popsize", help="Initial size of population for each community in the model", type=int, required=True)
     parser.add_argument("--migrationfraction", nargs='+', help="Fraction of population that migrates each time step", type=float, required=True, default=[])

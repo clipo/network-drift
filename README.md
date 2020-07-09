@@ -8,7 +8,7 @@ network-drift is a python-based software layer on top of simuPOP by Bo Peng, cur
 
 demography : python modules for the population structure. Currently, this consists just of network configuration. Networks can be configured as GML files or by specifiying numbers of nodes and connectivity (producing small-world graphs).
 
-models :  python script to run the simulation models.
+models :  python scripts that run the simulation models.
 
 simuPOP_examples : python scripts that demonstrate features of simuPOP from documentation and cookbooks. 
 
@@ -20,7 +20,92 @@ Rcode : R code and data used to produce heatmap figures for visualizing  output 
 
 find . -name "*.py" | xargs grep -h 'import ' | grep -v simu | sort | cut -d' ' -f2 | uniq > required-modules.txt
 
-<h2>Runtime parameters for Figures in Paper</h2>
+<h2>Scripts</h2>
+
+There are 3 primary python scripts that use the demography modules to run simulations under varying conditions. These 
+are found in the /models directory.
+
+<h4>network-k-eval.py</h4>
+This python script runs simulations of a population broken into a series of fixed subpopulations that vary in their 
+interaction configuration (k). k vlaues can vary from 2 (i.e., each sub population interacts with 2 of its neighbors) to
+ a sccenario in which each subpopulation interacts with all other subpopulations (N-1). This script produces 
+a series of visualizations that include the network and various metrics (richness, diversity, rare trait numbers) shown over time.
+
+Arguments taken by the python script include:
+* --experiment  (Name for experiment, is used as name of output directory for figures and data that are generated.)
+* --debug (turn on debugging output, default=False)
+* --reps (Determines the number repeated runs that are done to produce confidence intervals. 
+Number of replicated populations per parameter set", default=1)
+* --networkfile (Name of GML file representing the  network model for this simulation. Use "smallworld" for generic configurations. 
+In cases where one wants to simulation using geographic locations, provide a GML file that has positions for each location. [e.g., ahu.gml].))
+* --numloci (Number of loci per individual. Usually 1.)
+* --maxinittraits (Maximum initial number of traits per locus for initialization).
+* --innovrate (Rate at which innovations occur in population as a per-locus rate, default=0.001)
+* --simlength (Number of generations. Point at which simulation and sampling end)
+* --popsize (Initial size of population)
+* --migrationfraction (Fraction of population that interacts with another subpopulation at each time step, default=0.0001)
+* --seed", type=int, help="Seed for random generators to ensure replicability")
+* --k_values (list of k-values to explore [e.g., 2 4 20 24])
+* --sub_pops (Number of sub populations, default=10)
+* --maxalleles (Maximum number of alleles", default=50)
+* --save_figs (Save figures or not?, default=True)
+* --burnintime (How long to wait before making measurements? Doesn't do anything in this script context, default=200)
+* --rewiringprob (Probability of random rewiring of network", default=0)
+
+<h4>network-subpop-eval.py</h4>
+This python script runs simulations of a population broken into a varying number of subpopulations that have a fixed
+interaction configuration (k). Subpopulations can vary from 2 to the size of the total population. This script produces 
+a series of visualizations that include the network and various metrics (richness, diversity, rare trait numbers) shown over time.  
+ 
+Arguments taken by the python script include:
+* --experiment  (Name for experiment, is used as name of output directory for figures and data that are generated.)
+* --debug (turn on debugging output, default=False)
+* --reps (Determines the number repeated runs that are done to produce confidence intervals. 
+Number of replicated populations per parameter set", default=1)
+* --networkfile (Name of GML file representing the  network model for this simulation. Use "smallworld" for generic configurations. In 
+cases where one wants to simulation using geographic locations, provide a GML file that has positions for each location. [e.g., ahu.gml].)
+* --numloci (Number of loci per individual. Usually 1.)
+* --maxinittraits (Maximum initial number of traits per locus for initialization).
+* --innovrate, (Rate at which innovations occur in population as a per-locus rate, default=0.001)
+* --simlength (Number of generations. Point at which simulation and sampling end)
+* --popsize (Initial size of population)
+* --migrationfraction (Fraction of population that interacts with another subpopulation at each time step, default=0.0001)
+* --seed", type=int, help="Seed for random generators to ensure replicability")
+* --k_values (k-value to explore [e.g., 20 ])
+* --sub_pops (List of sub population numbers for simulation runs. [e.g., 10 100 200])
+* --maxalleles (Maximum number of alleles", default=50)
+* --save_figs (Save figures or not?, default=True)
+* --burnintime (How long to wait before making measurements? Doesn't do anything in this script context,, default=2000)
+* --rewiringprob (Probability of random rewiring of network", default=0)
+
+<h4>parameter-sweep-for-localization.py</h4>
+This python script runs parameter sweeps of various values that include the k, number of subpops, migration rate, and innovation rate.  
+The output of the script is a CSV file that shows the metrics that each configuration reached at the point of time in that is set by the "burnintime" parameter.
+These CSV files then can be read by the R code (in repository) to produce heatmap figures. Note that running this script can
+ take fairly long depending on the number of configuration combinations provided. 
+ 
+Arguments taken by the python script include:
+* --experiment  (Name for experiment, is used as name of output directory for figures and data that are generated.)
+* --debug (turn on debugging output, default=False)
+* --reps (Determines the number repeated runs that are done to produce confidence intervals. 
+Number of replicated populations per parameter set", default=1)
+* --networkfile (Name of GML file representing the  network model for this simulation. Use "smallworld" for generic configurations. In 
+cases where one wants to simulation using geographic locations, provide a GML file that has positions for each location. [e.g., ahu.gml].)
+* --numloci (Number of loci per individual. Usually 1.)
+* --maxinittraits (Maximum initial number of traits per locus for initialization).
+* --innovrate, (List of rates at which innovations occur in population as a per-locus rate [e.g., 0.1 0.001 0.0001])
+* --simlength (Number of generations. Point at which simulation and sampling end)
+* --popsize (Initial size of population)
+* --migrationfraction (list of fraction of population that interacts with another subpopulation at each time step, default=0.0001)
+* --seed", type=int, help="Seed for random generators to ensure replicability")
+* --k_values (List of k-values to explore [e.g., 20 50 150])
+* --sub_pops (List of sub population numbers for simulation runs. [e.g., 10 100 200])
+* --maxalleles (Maximum number of alleles", default=50)
+* --save_figs (Save figures or not?, default=True)
+* --burnintime (How long to wait before making measurements? Doesn't do anything in this script context,, default=2000)
+* --rewiringprob (Probability of random rewiring of network", default=0
+
+<h2>Runtime parameters for figures included in paper</h2>
 
 The following runtime parameters were used to generate the figures in the associated paper.
 
