@@ -1,0 +1,19 @@
+Arguments used: ['/Users/clipo/PycharmProjects/network-drift/models/parameter-sweep-for-localization.py', '--experiment', 'sweep-kvalues-mig', '--networkfile', 'smallworld', '--numloci', '1', '--maxinittraits', '100', '--popsize', '5000', '--migrationfraction', '0.0001', '0.0025', '0.0005', '0.001', '0.0025', '0.005', '--innovrate', '0.00', '--k_values', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95', '100', '105', '110', '115', '120', '125', '130', '135', '140', '145', '150', '155', '160', '165', '170', '175', '180', '185', '190', '--rewiringprob', '0.000', '--sub_pops', '200', '--maxalleles', '10000', '--simlength', '2005', '--reps', '5']
+--experiment: sweep-kvalues-mig
+--debug: None
+--reps: 5
+--networkfile: smallworld
+--debug: None
+--numloci: 1
+--maxinittraits: 100
+--innovrate: [0.0]
+--simlength: 2005
+--popsize: 5000
+--migrationfraction: [0.0001, 0.0025, 0.0005, 0.001, 0.0025, 0.005]
+--seed: None
+--k_values: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190]
+--sub_pops: ['200']
+--maxalleles: 10000
+--save_figs: False
+--burnintime: 2000
+--rewiringprob: 0.0

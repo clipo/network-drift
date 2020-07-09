@@ -1,0 +1,19 @@
+Arguments used: ['/Users/clipo/Documents/PycharmProjects/network-drift/models/parameter-sweep-for-localization.py', '--experiment', 'rn-sweep', '--networkfile', '/Users/clipo/Documents/PycharmProjects/network-drift/data/rapa_nui/ahu.gml', '--numloci', '1', '--innovrate', '0.00', '--maxinittraits', '100', '--popsize', '5000', '--migrationfraction', '0.000001', '0.000005', '0.00001', '0.00005', '--k_values', '5', '10', '25', '50', '75', '100', '125', '--rewiringprob', '0.0', '--sub_pops', '150', '--maxalleles', '10000', '--simlength', '2005', '--reps', '5']
+--experiment: rn-sweep
+--debug: None
+--reps: 5
+--networkfile: /Users/clipo/Documents/PycharmProjects/network-drift/data/rapa_nui/ahu.gml
+--debug: None
+--numloci: 1
+--maxinittraits: 100
+--innovrate: [0.0]
+--simlength: 2005
+--popsize: 5000
+--migrationfraction: [1e-06, 5e-06, 1e-05, 5e-05]
+--seed: None
+--k_values: [5, 10, 25, 50, 75, 100, 125]
+--sub_pops: ['150']
+--maxalleles: 10000
+--save_figs: False
+--burnintime: 2000
+--rewiringprob: 0.0
