@@ -162,9 +162,11 @@ def main():
                 ax.plot(pop.dvars().fst, label='Replicate: %s' % count)
                 output[k][subnum][count] = deepcopy(pop.dvars())
                 count += 1
-            ax.legend(loc=2)
-            ax.set_ylabel('FST')
-            ax.set_xlabel('Generation')
+            ax.legend(loc=2, fontsize=24)
+            ax.set_ylabel('FST', fontsize=24)
+            ax.set_xlabel('Generations', fontsize=24)
+            ax.tick_params(axis='x', labelsize=20)
+            ax.tick_params(axis='y', labelsize=20)
             plt.show()
 
     sum_fig = plt.figure(figsize=(16,9))
@@ -180,9 +182,11 @@ def main():
                 else:
                     ax.plot(output[k][subnum][n].fst,
                             color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-    ax.legend(loc=2)
-    ax.set_ylabel('Fst')
-    ax.set_xlabel('Generations')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Fst', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename= output_path + "/sum_fig.png"
     sum_fig.savefig(savefilename, bbox_inches='tight')
@@ -201,9 +205,11 @@ def main():
                 else:
                     ax.plot(output[k][subnum][n].richness,
                             color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-    ax.legend(loc=2)
-    ax.set_ylabel('Richness')
-    ax.set_xlabel('Generations')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Richness', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/richness.png"
     rich_fig.savefig(savefilename, bbox_inches='tight')
@@ -233,9 +239,11 @@ def main():
             ax.plot(list(CI_min), "--", color="0.5")
             ax.plot(list(CI_max), "--", color="0.5")
             ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-    ax.legend(loc=2)
-    ax.set_ylabel('Fst')
-    ax.set_xlabel('Generation')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Fst', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/summary-ci.png"
     summary_fig.savefig(savefilename, bbox_inches='tight')
@@ -264,9 +272,11 @@ def main():
             ax.plot(list(CI_min), "--", color="0.5")
             ax.plot(list(CI_max), "--", color="0.5")
             ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-    ax.legend(loc=2)
-    ax.set_ylabel('Richness')
-    ax.set_xlabel('Generation')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Richness', fontsize=24)
+    ax.set_xlabel('Generation', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/richness-ci.png"
     richness_sum_fig.savefig(savefilename, bbox_inches='tight')

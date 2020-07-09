@@ -156,9 +156,11 @@ def main():
             ax.plot(pop.dvars().fst, label='Replicate: %s' % count)
             output[param_value][count] = deepcopy(pop.dvars())
             count += 1
-        ax.legend(loc=2)
-        ax.set_ylabel('FST')
-        ax.set_xlabel('Generation')
+        ax.legend(loc=2, fontsize=24)
+        ax.set_ylabel('FST', fontsize=24)
+        ax.set_xlabel('Generations', fontsize=24)
+        ax.tick_params(axis='x',labelsize=20)
+        ax.tick_params(axis='y', labelsize=20)
         plt.show()
 
     ## draw traits in 1s or 2s of the subpops
@@ -182,9 +184,11 @@ def main():
                         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
                 ax.plot(output[k][n].twos,"--",
                         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-    ax.legend(loc=2)
-    ax.set_ylabel('Numbers of Traits')
-    ax.set_xlabel('Generations')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Numbers of Traits', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/subpop_fig.svg"
     subpop_fig.savefig(savefilename, bbox_inches='tight')
@@ -201,9 +205,11 @@ def main():
             else:
                 ax.plot(output[k][n].fst,
                         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-    ax.legend(loc=2)
-    ax.set_ylabel('Fst')
-    ax.set_xlabel('Generations')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Fst', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename= output_path + "/sum_fig.svg"
     sum_fig.savefig(savefilename, bbox_inches='tight')
@@ -221,9 +227,11 @@ def main():
             else:
                 ax.plot(output[k][n].richness,
                         color=list(dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS).keys())[iteration])
-    ax.legend(loc=2)
-    ax.set_ylabel('Richness')
-    ax.set_xlabel('Generations')
+    ax.legend(loc=2, fontsize=24)
+    ax.set_ylabel('Richness', fontsize=24)
+    ax.set_xlabel('Generations', fontsize=24)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/richness.svg"
     rich_fig.savefig(savefilename, bbox_inches='tight')
@@ -252,9 +260,11 @@ def main():
         ax.plot(list(CI_min), "--", color="0.5")
         ax.plot(list(CI_max), "--", color="0.5")
         ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-        ax.legend(loc=2)
-        ax.set_ylabel('Fst')
-        ax.set_xlabel('Generation')
+        ax.legend(loc=2, fontsize=24)
+        ax.set_ylabel('Fst', fontsize=24)
+        ax.set_xlabel('Generations', fontsize=24)
+        ax.tick_params(axis='x', labelsize=20)
+        ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/summary-ci.svg"
     summary_fig.savefig(savefilename, bbox_inches='tight')
@@ -282,9 +292,11 @@ def main():
         ax.plot(list(CI_min), "--", color="0.5")
         ax.plot(list(CI_max), "--", color="0.5")
         ax.fill_between(list(CI_average), list(CI_max), list(CI_min), color="None", linestyle="--")
-        ax.legend(loc=2)
-        ax.set_ylabel('Richness')
-        ax.set_xlabel('Generation')
+        ax.legend(loc=2, fontsize=24)
+        ax.set_ylabel('Richness', fontsize=24)
+        ax.set_xlabel('Generations', fontsize=24)
+        ax.tick_params(axis='x', labelsize=20)
+        ax.tick_params(axis='y', labelsize=20)
     plt.show()
     savefilename = output_path + "/richness-ci.svg"
     richness_sum_fig.savefig(savefilename, bbox_inches='tight')
