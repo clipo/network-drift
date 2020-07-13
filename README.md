@@ -122,7 +122,7 @@ Examines the effect of varying the number of sub-populations within a population
 <h3>Figures 7-12</h3>
 Examines the effect of varying migration rates between subpopulations as well as varying degrees of connectivity (k). 
 Note: this process generates the data for these figures. The R-code produces the heatmap visualizations
-* ./network-drift/models/parameter-sweep-for-localization.py --experiment paramsweep-10-reps --networkfile smallworld --numloci 1 --maxinittraits 100 --popsize 5000  --migrationfraction 0.0001 0.00025 0.0005 0.00075 0.001 0.0025 0.005 0.0075 0.01 0.025 0.05 --innovrate 0.00 --k_values 2 10 20 40 60 80 100 120 140 --rewiringprob 0.001 --sub_pops 200 --maxalleles 10000 --simlength 2005 --reps 10
+* ./network-drift/models/parameter-sweep-for-localization.py --experiment paramsweep-10-reps --networkfile smallworld --numloci 1 --maxinittraits 100 --popsize 5000  --migrationfraction 0.0005 0.001 0.0025 0.005 --innovrate 0.00 --k_values 2 25 50 100 125 --rewiringprob 0.001 --sub_pops 200 --maxalleles 10000 --simlength 2005 --reps 10
 
 <h3>Figure 13 (Creates network configurations for Figure 13)</h3>
 Produces the varying degrees of connectivity among ahu locations on Rapa Nui. 
