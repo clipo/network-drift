@@ -49,7 +49,7 @@ def check_k_and_migration_rates(config):
     '''
     Check the combination of k and migration rates to see if any combination results in >1.0 total
     :param config: the configuration object with the parameters from the command line
-    :return: output message (if a problem) or True (if no problem
+    :return: output message (if a problem) or True (if no problem)
     '''
     k_values = config.k_values
     output_message = ""
