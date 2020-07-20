@@ -4,17 +4,119 @@ Cultural transmission models in python using simuPOP, SciPy, and NumPy.
 
 network-drift is a python-based software layer on top of simuPOP by Bo Peng, currently version 1.9. See http://simupop.sourceforge.net/ for source code, license, and documentation.
 
+<h2>Overview</h2>
+
+The network-drift project examines the effects of drift on variability within populations of varying size and structure. 
+By definition, drift (whether among genetic variants or cultural ones) is a random process. In large populations, drift
+ tends to cause relatively small changes in trait frequency. In small populations, however, drift can lead to rapid changes in trait frequencies, 
+ potentially resulting in fixation or loss of variants. In these situations, drift can produce dramatic differences in historic outcomes: 
+ two populations drawn from a single population may begin with an identical frequency of traits but can quickly diverge in composition.  
+ In addition, drift in small populations often leads to rapid loss of diversity and richness in variation.
+ 
+ The effect of drift on the frequency of traits in a population can be easily simulated. For example, compare drift over 
+ time in a population of varying size (Figure 4).  In each simulation, traits are initially present in 50% of individuals.  
+ For each population size, we track the changing frequency of traits when replication is purely subject to sampling 
+ (i.e., no selection or other biases). The smaller the population, the greater the chance that traits will be eliminated. 
+ Of interest here are the relative rates of change for traits going to zero. While any trait in any population size has a 
+ chance of being reduced to zero over time, smaller populations tend to lose variants more rapidly than larger populations. 
+ This is the basis of Kimura and Ohta’s (1969) work that showed that the time until a trait goes extinct in a population 
+ depends on two parameters, Ne (the effective population) and p (the initial trait frequency).
+ 
+ ![Alt text]("./images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+ Figure 1. Drift under varying population sizes: (A) 5000 (B) 500 (C) 100 (D) 50 (E) 25. For each population size, 100 replicates 
+ are shown where traits begin at 50% and due to the effects of drift stochastically change in frequency over 1000 time steps. 
+ In some replicates, traits go to fixation and in some, they go extinct.
+
+![Alt text]("./images/drift-effects-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+Figure 2. The effects of drift on traits in populations of 5 different sizes (5000, 500, 100, 50, 25).  This figure shows the 
+relative rate of trait loss across the 1000 replicate simulations over 1000 time steps for each population size. In each replicate, 
+traits begin at 50% prevalence in the population. The smaller the population size, the more traits are likely to be lost from the 
+population. In the large population, 
+however, no traits are lost.
+
+One significant factor that can contribute to the impact of drift on variability is population structure. The impact of drift 
+is greatest when populations are well-mixed. The greater the degree of structure within a population, the more likely that 
+variability will be retained in a population. We can demonstrate the relation of population structure and its impact on 
+drift by modeling population interaction as a network. Structure within a population can be represented by a network where 
+vertices represent individuals (N) and edges represent the potential interaction between those individuals (e.g., mating or 
+social learning). The structure of the network then varies by the number of 
+edges between individual vertices (k, the network degree), from immediate neighbors (k=2) to all other vertices (k=N-1).   
+
+![Alt text]("./images/schneider-et-al-2016.png?raw=true "Drift among populations of varying sizes")
+
+Schneider and colleagues (2016) have shown that the effect of drift on diversity can be countered by a 
+combination of mutation (or innovation) rate and/or highly structured (low k) networks (Figure 7). 
+Following Schneider et al. (2016), given a population of size N and mutation rate μ, 
+drift dominates whenever 2μN⪡1. For 2μN⪢1, on the other hand, mutation dominates over drift, maximizing genetic diversity.
+ The transition occurs at a threshold, μc = 1/2N, where the equilibrium distribution of traits frequencies becomes uniform.  
+ This threshold (kc) is a critical point: above it drift is insensitive to population spatial structure. Below kc,
+  small degrees of connectivity (k) afford high degrees of spatial structure when combined with mutation rate leads to
+   increases in diversity (de Aguiar et al., 2009; Martins et al., 2013). As shown in Figure 6, diversity can be increased 
+   either by increasing the mutation rate at fixed k or by decreasing k at fixed mutation rate. Schneider et al. (2016:15) 
+   remark that “in consonance with classical results, extreme restriction in [gene] flow is required for structuring to have an 
+   effect. In fact, the critical mutation rate 
+above which drift is overcome changes significantly only when the degree of the network becomes very small.”
+
+In terms of information retention within a population, our interest is less in the effect of mutation (or innovation) 
+but rather on population structure (k).  While innovation would increase overall diversity, its effect would be to 
+alter information and thus the potential contribution to future fitness consequences. Instead, we need to focus
+ on population structure since it is conceivable that the way individuals or sub-populations within a population 
+ interact could serve to retain information richness as well as diversity. In this way, we would expect populations 
+ for which the retention of information has strong selective advantages to be highly structured.  To explore this possibility, 
+ this simulation explores various impacts of varying configurations of populations. To accommodate the aggregate nature of the 
+ archaeological record, these models need to accommodate populations interacting at two different scales: individuals interacting 
+ within a small 
+community with nominal structure and individual communities interacting differentially amongst one another.  
+		
+We use simuPOP (Peng and Kimmel 2005) to simulate drift within populations of varying structure. SimuPOP is a python-based population 
+simulator that allows one to evolve populations forward in time under varying configurations of mutation, recombination, 
+migration, and population/subpopulation sizes. We based our simulations on a simple Wright–Fisher model (Fisher 1923; Wright 1931) 
+that explores changes in a haploid population of fixed size, N. Traits are modeled as values within a single loci, in a way 
+that is equivalent to attributes along a single dimension (sensu Dunnell 1971). In the model, traits for individuals are 
+derived each time-step by sampling with replacement from the pool of other individuals (i.e., the previous “generation”). 
+This pattern of copying traits is effectively random, implying that an individual has equal probability to interact with a
+nyone else in the population. At each step in which an individual copies traits, there is a fixed chance of innovation in 
+which a new trait is introduced. 
+
+To accommodate population structure, we divided the overall population into a number of subpopulations. Within each subpopulation, 
+copying is assumed to be random, but is not allowed between subpopulations. With subpopulations, drift can produce a unique 
+combination of traits even if the initial conditions begin identically. We treat copying between subpopulations as migration, 
+the exchange of information and traits between subpopulations. Subpopulations can be configured to interact with other subpopulations 
+by copying traits depending on a network configuration. In simuPOP, we can also vary the migration rate, the percentage 
+of individuals from subpopulations that copy from other subpopulations. 
+
+<h2>References</h2>
+
+de Aguiar, M.A.M., Baranger, M., Baptestini, E.M., Kaufman, L., Bar-Yam, Y., 2009. Global patterns of speciation and diversity. Nature 460, 384.
+
+Dunnell, R.C., 1971. Systematics in prehistory. Free Press, New York.
+
+Fisher, R.A., 1923. XXI.—On the Dominance Ratio. Proceedings of the Royal Society of Edinburgh 42, 321–341. https://doi.org/10.1017/S0370164600023993
+
+Martins, A.B., Aguiar, M.A.M. de, Bar-Yam, Y., 2013. Evolution and stability of ring species. PNAS 110, 5080–5084. https://doi.org/10.1073/pnas.1217034110
+
+Peng, B., Kimmel, M., 2005. simuPOP: a forward-time population genetics simulation environment. Bioinformatics 21, 3686–3687. https://doi.org/10.1093/bioinformatics/bti584
+
+Schneider, D.M., Martins, A.B., de Aguiar, M.A.M., 2016. The mutation–drift balance in spatially structured populations. Journal of Theoretical Biology 402, 9–17. https://doi.org/10.1016/j.jtbi.2016.04.024
+
+Wright, S., 1931. Evolution in Mendelian Populations. Genetics 16, 97–159.
+
+
 <h2>Directory Structure</h2>
 
-demography : python modules for the population structure. Currently, this consists just of network configuration. Networks can be configured as GML files or by specifiying numbers of nodes and connectivity (producing small-world graphs).
+networkdrift/demography : python modules for the population structure. Currently, this consists just of network configuration. Networks can be configured as GML files or by specifiying numbers of nodes and connectivity (producing small-world graphs).
 
 models :  python scripts that run the simulation models.
 
 simuPOP_examples : python scripts that demonstrate features of simuPOP from documentation and cookbooks. 
 
+data/rapa_nui : contains shapefiles and gml file for ahu locations on Rapa Nui
+
 testdata : sample GML files
 
 Rcode : R code and data used to produce heatmap figures for visualizing  output of simulation. 
+
+images : images in this README.md document
 
 <h2>Module Dependencies</h2>
 
