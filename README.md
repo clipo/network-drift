@@ -22,12 +22,12 @@ By definition, drift (whether among genetic variants or cultural ones) is a rand
  This is the basis of Kimura and Ohta’s (1969) work that showed that the time until a trait goes extinct in a population 
  depends on two parameters, Ne (the effective population) and p (the initial trait frequency).
  
- ![Alt text]("http://github.com/clipo/network-drift/images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+ ![Drift]("clipo.github.com//network-drift/images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
  Figure 1. Drift under varying population sizes: (A) 5000 (B) 500 (C) 100 (D) 50 (E) 25. For each population size, 100 replicates 
  are shown where traits begin at 50% and due to the effects of drift stochastically change in frequency over 1000 time steps. 
  In some replicates, traits go to fixation and in some, they go extinct.
 
-![Alt text]("http://github.com/clipo/network-drift/images/drift-effects-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+![Drift Effects]("http://github.com/clipo/network-drift/images/drift-effects-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
 Figure 2. The effects of drift on traits in populations of 5 different sizes (5000, 500, 100, 50, 25).  This figure shows the 
 relative rate of trait loss across the 1000 replicate simulations over 1000 time steps for each population size. In each replicate, 
 traits begin at 50% prevalence in the population. The smaller the population size, the more traits are likely to be lost from the 
