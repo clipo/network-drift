@@ -14,7 +14,7 @@ By definition, drift (whether among genetic variants or cultural ones) is a rand
  In addition, drift in small populations often leads to rapid loss of diversity and richness in variation.
  
  The effect of drift on the frequency of traits in a population can be easily simulated. For example, compare drift over 
- time in a population of varying size (Figure 4).  In each simulation, traits are initially present in 50% of individuals.  
+ time in a population of varying size (Figs. 1 and 2).  In each simulation, traits are initially present in 50% of individuals.  
  For each population size, we track the changing frequency of traits when replication is purely subject to sampling 
  (i.e., no selection or other biases). The smaller the population, the greater the chance that traits will be eliminated. 
  Of interest here are the relative rates of change for traits going to zero. While any trait in any population size has a 
@@ -22,12 +22,12 @@ By definition, drift (whether among genetic variants or cultural ones) is a rand
  This is the basis of Kimura and Ohta’s (1969) work that showed that the time until a trait goes extinct in a population 
  depends on two parameters, Ne (the effective population) and p (the initial trait frequency).
  
- ![Drift]("clipo.github.com//network-drift/images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+ ![Drift]("https://github.com/clipo/network-drift/images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
  Figure 1. Drift under varying population sizes: (A) 5000 (B) 500 (C) 100 (D) 50 (E) 25. For each population size, 100 replicates 
  are shown where traits begin at 50% and due to the effects of drift stochastically change in frequency over 1000 time steps. 
  In some replicates, traits go to fixation and in some, they go extinct.
 
-![Drift Effects]("http://github.com/clipo/network-drift/images/drift-effects-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+![Drift Effects]("https://github.com/clipo/network-drift/images/drift-effects-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
 Figure 2. The effects of drift on traits in populations of 5 different sizes (5000, 500, 100, 50, 25).  This figure shows the 
 relative rate of trait loss across the 1000 replicate simulations over 1000 time steps for each population size. In each replicate, 
 traits begin at 50% prevalence in the population. The smaller the population size, the more traits are likely to be lost from the 
@@ -42,7 +42,7 @@ vertices represent individuals (N) and edges represent the potential interaction
 social learning). The structure of the network then varies by the number of 
 edges between individual vertices (k, the network degree), from immediate neighbors (k=2) to all other vertices (k=N-1).   
 
-![Alt text]("http://github.com/clipo/network-drift/images/schneider-et-al-2016.png?raw=true "Drift among populations of varying sizes")
+![Network Structure]("https://github.com/clipo/network-drift/images/schneider-et-al-2016.png?raw=true "Drift among populations of varying sizes")
 
 Schneider and colleagues (2016) have shown that the effect of drift on diversity can be countered by a 
 combination of mutation (or innovation) rate and/or highly structured (low k) networks (Figure 7). 
@@ -92,6 +92,8 @@ de Aguiar, M.A.M., Baranger, M., Baptestini, E.M., Kaufman, L., Bar-Yam, Y., 200
 Dunnell, R.C., 1971. Systematics in prehistory. Free Press, New York.
 
 Fisher, R.A., 1923. XXI.—On the Dominance Ratio. Proceedings of the Royal Society of Edinburgh 42, 321–341. https://doi.org/10.1017/S0370164600023993
+
+Kimura, M., Ohta, T., 1969. The Average Number of Generations until Fixation of a Mutant Gene in a Finite Population. Genetics 61, 763–771.
 
 Martins, A.B., Aguiar, M.A.M. de, Bar-Yam, Y., 2013. Evolution and stability of ring species. PNAS 110, 5080–5084. https://doi.org/10.1073/pnas.1217034110
 
