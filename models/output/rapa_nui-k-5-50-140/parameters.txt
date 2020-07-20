@@ -1,0 +1,19 @@
+Arguments used: ['/Users/clipo/Documents/PycharmProjects/network-drift-2.0/network-drift/models/network-k-eval.py', '--experiment', 'rapa_nui-k-5-50-140', '--networkfile', '/Users/clipo/Documents/PycharmProjects/network-drift-2.0/network-drift/data/rapa_nui/ahu.gml', '--numloci', '1', '--maxinittraits', '100', '--popsize', '5000', '--migrationfraction', '.0001', '--innovrate', '0.00', '--k_values', '5', '50', '140', '--rewiringprob', '0.0001', '--sub_pops', '150', '--maxalleles', '10000', '--simlength', '2000', '--reps', '10', '--save_figs', 'True']
+--experiment: rapa_nui-k-5-50-140
+--debug: None
+--reps: 10
+--networkfile: /Users/clipo/Documents/PycharmProjects/network-drift-2.0/network-drift/data/rapa_nui/ahu.gml
+--debug: None
+--numloci: 1
+--maxinittraits: 100
+--innovrate: 0.0
+--simlength: 2000
+--popsize: 5000
+--migrationfraction: 0.0001
+--seed: None
+--k_values: [5, 50, 140]
+--sub_pops: 150
+--maxalleles: 10000
+--save_figs: True
+--burnintime: 2000
+--rewiringprob: 0.0001
