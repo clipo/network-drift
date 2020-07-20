@@ -23,11 +23,13 @@ By definition, drift (whether among genetic variants or cultural ones) is a rand
  depends on two parameters, Ne (the effective population) and p (the initial trait frequency).
  
  ![Drift](https://github.com/clipo/network-drift/blob/master/images/drift-with-varying-population-sizes.png?raw=true "Drift among populations of varying sizes")
+ 
  Figure 1. Drift under varying population sizes: (A) 5000 (B) 500 (C) 100 (D) 50 (E) 25. For each population size, 100 replicates 
  are shown where traits begin at 50% and due to the effects of drift stochastically change in frequency over 1000 time steps. 
  In some replicates, traits go to fixation and in some, they go extinct.
 
 ![Drift Effects](https://github.com/clipo/network-drift/blob/master/images/drift-effects-varying-population-sizes.png "Drift among populations of varying sizes")
+
 Figure 2. The effects of drift on traits in populations of 5 different sizes (5000, 500, 100, 50, 25).  This figure shows the 
 relative rate of trait loss across the 1000 replicate simulations over 1000 time steps for each population size. In each replicate, 
 traits begin at 50% prevalence in the population. The smaller the population size, the more traits are likely to be lost from the 
@@ -43,6 +45,8 @@ social learning). The structure of the network then varies by the number of
 edges between individual vertices (k, the network degree), from immediate neighbors (k=2) to all other vertices (k=N-1).   
 
 ![Network Structure](https://github.com/clipo/network-drift/blob/master/images/schneider-et-al-2016-figure.png?raw=true "Drift among populations of varying sizes")
+
+Figure 3. Population structure and its impact on diversity (from Schneider et al. 2016).
 
 Schneider and colleagues (2016) have shown that the effect of drift on diversity can be countered by a 
 combination of mutation (or innovation) rate and/or highly structured (low k) networks (Figure 7). 
