@@ -5,7 +5,7 @@ Cultural transmission models in python using simuPOP, SciPy, and NumPy.
 network-drift is a python-based software layer on top of simuPOP by Bo Peng, currently version 1.9. See http://simupop.sourceforge.net/ for source code, license, and documentation.
 
 Carl P. Lipo, Robert J. DiNapoli, Mark E. Madsen, Terry L. Hunt 
-2020 Population structure drives cultural diversity in finite populations: An example from Rapa Nui (Easter Island, Chile). Unpublished manuscript.
+2021 Population structure drives cultural diversity in finite populations: A hypothesis for localized community patterns on Rapa Nui (Easter Island, Chile). Unpublished manuscript.
 
 <h2>Overview</h2>
 
