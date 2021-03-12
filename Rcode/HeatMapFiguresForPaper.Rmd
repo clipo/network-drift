@@ -40,13 +40,13 @@ param_set <-  data.frame(sweep_kvalues_mig_rare_trait_output$k,
                         sweep_kvalues_mig_rare_trait_output$Twos_Upper)
                         
 ## Diversity
-## Figure 7. The impact of network structure and migration probability on overall trait diversity within a population. In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of FST calculated from 10 runs at the point of 2000 timesteps. The values of diversity is shown as a heatmap where the high levels of diversity are illustrated in green and the low levels are in red. From this figure, it is clear that the diversity is best maintained under conditions of low migration probability and low levels of connectivity. 
+## Figure 7. The impact of network structure and Interaction Rate on overall trait diversity within a population. In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of FST calculated from 10 runs at the point of 2000 timesteps. The values of diversity is shown as a heatmap where the high levels of diversity are illustrated in green and the low levels are in red. From this figure, it is clear that the diversity is best maintained under conditions of low Interaction Rate and low levels of connectivity. 
 ggplot(data = param_set, aes(x = sweep_kvalues_mig_rare_trait_output.k, 
                              y = sweep_kvalues_mig_rare_trait_output.Migration)) +
   geom_tile(aes(fill = sweep_kvalues_mig_rare_trait_output.Fst_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
   coord_fixed(ratio=10) +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("k")  +
   labs(fill='Fst')   +
   scale_x_discrete(breaks = breakpoints) 
@@ -54,12 +54,12 @@ ggplot(data = param_set, aes(x = sweep_kvalues_mig_rare_trait_output.k,
 ggsave("figure-7.pdf", plot = last_plot(), device = "pdf", 
   scale = 1,  dpi = 300)
 ```
-Figure 7. The impact of network structure and migration probability on overall trait diversity within a population. In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of FST calculated from 10 runs at the point of 2000 timesteps. The values of diversity are shown as a heatmap where the high levels of diversity are illustrated in red and the low levels are in blue. Diversity is best maintained under conditions of low migration probability and low levels of connectivity. 
+Figure 7. The impact of network structure and Interaction Rate on overall trait diversity within a population. In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of FST calculated from 10 runs at the point of 2000 timesteps. The values of diversity are shown as a heatmap where the high levels of diversity are illustrated in red and the low levels are in blue. Diversity is best maintained under conditions of low Interaction Rate and low levels of connectivity. 
 
 
 ```{r figure8, echo=FALSE}
 #Richness
-##Figure 8. The impact of trait network structure and migration probability on trait richness within a population.  In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of richness calculated from 10 runs at the point of 2000 timesteps. The richness of traits is best maintained under conditions of relatively low migration probability and low levels of k. 
+##Figure 8. The impact of trait network structure and Interaction Rate on trait richness within a population.  In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of richness calculated from 10 runs at the point of 2000 timesteps. The richness of traits is best maintained under conditions of relatively low Interaction Rate and low levels of k. 
  
 
 ggplot(data = param_set, aes(x =sweep_kvalues_mig_rare_trait_output.k, 
@@ -67,7 +67,7 @@ ggplot(data = param_set, aes(x =sweep_kvalues_mig_rare_trait_output.k,
   geom_tile(aes(fill = sweep_kvalues_mig_rare_trait_output.Richness_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
   coord_fixed(ratio=10) +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("k")  +
   labs(fill='Richness')  +
   scale_x_discrete(breaks = breakpoints)
@@ -77,7 +77,7 @@ ggsave("figure-8.pdf", plot = last_plot(), device = "pdf",
   scale = 1,  dpi = 300)
 
 ```
-Figure 8. The impact of trait network structure and migration probability on trait richness within a population.  In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of richness calculated from 10 runs at the point of 2000 timesteps. The richness of traits is best maintained under conditions of relatively low migration probability and low levels of k. 
+Figure 8. The impact of trait network structure and Interaction Rate on trait richness within a population.  In this set of simulations, we divided populations of 5000 into a series of 200 subpopulations and varied connectivity from k=5 to k=190 in steps of 5. For each value of k, we ran the simulation with migration probabilities that ranged from 0.0001 to 0.005. The resulting data are the mean values of richness calculated from 10 runs at the point of 2000 timesteps. The richness of traits is best maintained under conditions of relatively low Interaction Rate and low levels of k. 
 
 ```{r figure9, echo=FALSE}
 #Figure 9.  Diversity measured by FST among a population at 2000 timesteps with network connectivity of k=2 with a variable number of subpopulations (5-200) and migration probabilities (0.0001-0.005). 
@@ -93,7 +93,7 @@ param_set <-  data.frame(sweep_subpops_rare_trait_output$NumSubPops, sweep_subpo
 ggplot(data = param_set, aes(x = sweep_subpops_rare_trait_output.NumSubPops, y = sweep_subpops_rare_trait_output.Migration)) +
   geom_tile(aes(fill = sweep_subpops_rare_trait_output.Fst_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("Number of Subpopulations")  +
   labs(fill='Fst at 2000 iterations (k=2)') +
   coord_fixed()
@@ -108,7 +108,7 @@ Figure 9.  Diversity measured by FST among a population at 2000 timesteps with n
 ggplot(data = param_set, aes(x = sweep_subpops_rare_trait_output.NumSubPops, y = sweep_subpops_rare_trait_output.Migration)) +
   geom_tile(aes(fill = sweep_subpops_rare_trait_output.Richness_Mean)) +
     scale_fill_gradient(low = "aliceblue", high = "blue") +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("Number of Subpopulations")  +
   labs(fill='Richness at 2000 iterations (k=2)') +
   coord_fixed()
@@ -118,7 +118,7 @@ ggsave("figure-10.pdf", plot = last_plot(), device = "pdf",
 Figure 10.  The richness of traits in a population at 2000 timesteps with network connectivity of k=2 with a variable number of subpopulations (5-200) and migration probabilities (0.0001-0.005). 
 
 ```{r figure11, echo=FALSE}
-#Figure 11. The impact of network structure is determined by connectivity and migration probability on the number of traits found only in one subpopulation after 2000 timesteps.
+#Figure 11. The impact of network structure is determined by connectivity and Interaction Rate on the number of traits found only in one subpopulation after 2000 timesteps.
 sweep_kvalues_mig_rare_trait_output <- read_csv(here("data/sweep-kvalues-mig","sweep-kvalues-mig-rare-trait-output.csv"),
         col_types = cols(InnovationRate = col_factor(), 
         Migration = col_character(), NumSubPops = col_factor(), 
@@ -140,7 +140,7 @@ ggplot(data = param_set, aes(x = sweep_kvalues_mig_rare_trait_output.k,
   geom_tile(aes(fill = sweep_kvalues_mig_rare_trait_output.Ones_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
   coord_fixed(ratio=10) +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("k")  +
   labs(fill='Number of subpopulations with one unique trait (k=2)')   +
   scale_x_discrete(breaks = breakpoints) 
@@ -148,10 +148,10 @@ ggplot(data = param_set, aes(x = sweep_kvalues_mig_rare_trait_output.k,
 ggsave("figure-11.pdf", plot = last_plot(), device = "pdf", 
   scale = 1,  dpi = 300)
 ```
-Figure 11.   The impact of network structure is determined by the number of subpopulations (k=2) and migration probability on the number of traits found only in one subpopulation after 2000 timesteps.
+Figure 11.   The impact of network structure is determined by the number of subpopulations (k=2) and Interaction Rate on the number of traits found only in one subpopulation after 2000 timesteps.
 
 ```{r figure12, echo=FALSE}
-#Figure 12.   The impact of network structure is determined by the number of subpopulations (k=2) and migration probability on the number of traits found only in one subpopulation after 2000 timesteps.
+#Figure 12.   The impact of network structure is determined by the number of subpopulations (k=2) and Interaction Rate on the number of traits found only in one subpopulation after 2000 timesteps.
 
 
 # Now the subpop sweeps
@@ -166,17 +166,17 @@ param_set <-  data.frame(sweep_subpops_rare_trait_output$NumSubPops, sweep_subpo
 ggplot(data = param_set, aes(x =sweep_subpops_rare_trait_output.NumSubPops, y = sweep_subpops_rare_trait_output.Migration)) +
   geom_tile(aes(fill = sweep_subpops_rare_trait_output.Ones_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("Number of Subpopulations")  +
   labs(fill='Number of subpopulations with one unique trait (k=2)') +
   coord_fixed()
 ggsave("figure-12.pdf", plot = last_plot(), device = "pdf", 
   scale = 1,  dpi = 300)
 ```
-Figure 12.   The impact of network structure is determined by the number of subpopulations (k=2) and migration probability on the number of traits found only in one subpopulation after 2000 timesteps.
+Figure 12.   The impact of network structure is determined by the number of subpopulations (k=2) and Interaction Rate on the number of traits found only in one subpopulation after 2000 timesteps.
 
 ```{r figure16, echo=FALSE}
-#Figure 16.  Trait richness after 2000 timesteps in the set of subpopulations modeled on Rapa Nui as a function of network connectivity (k) and migration probability. 
+#Figure 16.  Trait richness after 2000 timesteps in the set of subpopulations modeled on Rapa Nui as a function of network connectivity (k) and Interaction Rate. 
 ## now work on the RN island sweep figures
 rn_sweep_kvalues_mig_rare_trait_output <- read_csv(here("data/rn-sweep","rn-sweep-rare-trait-output.csv"),
         col_types = cols(InnovationRate = col_factor(), 
@@ -198,7 +198,7 @@ ggplot(data = param_set, aes(x = rn_sweep_kvalues_mig_rare_trait_output.k,
   geom_tile(aes(fill = rn_sweep_kvalues_mig_rare_trait_output.Richness_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
   coord_fixed(ratio=10) +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("k")  +
   labs(fill='Richness') +
   coord_fixed()
@@ -206,18 +206,18 @@ ggplot(data = param_set, aes(x = rn_sweep_kvalues_mig_rare_trait_output.k,
 ggsave("figure-16.pdf", plot = last_plot(), device = "pdf", 
   scale = 1,  dpi = 300)
 ```
-Figure 16. Trait richness after 2000 timesteps in the set of subpopulations modeled on Rapa Nui as a function of network connectivity (k) and migration probability.
+Figure 16. Trait richness after 2000 timesteps in the set of subpopulations modeled on Rapa Nui as a function of network connectivity (k) and Interaction Rate.
 
 . 
 ```{r figure17, echo=FALSE}
-#Figure 17.  Traits found only in one subpopulation as a consequence of network connectivity (k) and migration probability after 2000 timesteps 
+#Figure 17.  Traits found only in one subpopulation as a consequence of network connectivity (k) and Interaction Rate after 2000 timesteps 
 
 ggplot(data = param_set, aes(x = rn_sweep_kvalues_mig_rare_trait_output.k, 
                              y = rn_sweep_kvalues_mig_rare_trait_output.Migration)) +
   geom_tile(aes(fill = rn_sweep_kvalues_mig_rare_trait_output.Ones_Mean)) +
   scale_fill_gradient(low = "aliceblue", high = "blue") +
   coord_fixed(ratio=10) +
-  ylab("Migration Probability") +
+  ylab("Interaction Rate") +
   xlab("k")  +
   labs(fill='Traits') +
   coord_fixed()
@@ -225,4 +225,4 @@ ggplot(data = param_set, aes(x = rn_sweep_kvalues_mig_rare_trait_output.k,
 ggsave("figure-17.pdf", plot = last_plot(), device = "pdf", 
   scale = 1,  dpi = 300)
 ```
-Figure 17.  Traits found only in one subpopulation as a consequence of network connectivity (k) and migration probability after 2000 timesteps
+Figure 17.  Traits found only in one subpopulation as a consequence of network connectivity (k) and Interaction Rate after 2000 timesteps
